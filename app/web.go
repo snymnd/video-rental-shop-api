@@ -14,24 +14,26 @@ import (
 func Run() {
 	viperConfig := config.NewViper()
 	dbConn := config.NewDbConnection(viperConfig)
+	tokenManager := config.NewTokenManager(viperConfig)
 	defer config.CloseDB(dbConn)
 	app := config.NewGin()
 
 	config.Bootstrap(&config.BootstrapConfig{
-		DB:       dbConn,
-		App:      app,
-		Config:   viperConfig,
+		DB:           dbConn,
+		App:          app,
+		TokenManager: tokenManager,
+		Config:       viperConfig,
 	})
 
 	// Create http.Server
-	port := ":"+viperConfig.GetString("SERVER_ADDRESS")
+	port := ":" + viperConfig.GetString("SERVER_ADDRESS")
 	server := &http.Server{
 		Addr:    port,
 		Handler: app.Handler(),
 	}
 	go func() {
 		log.Printf("Server started, listen on port %s", port)
-		
+
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}

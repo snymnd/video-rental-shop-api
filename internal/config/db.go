@@ -9,8 +9,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-
-func NewDbConnection(viper *viper.Viper) (*sql.DB) {
+func NewDbConnection(viper *viper.Viper) *sql.DB {
 	dbHost := viper.GetString("DATABASE_HOST")
 	dbPort := viper.GetInt("DATABASE_PORT")
 	dbUser := viper.GetString("DATABASE_USER")
@@ -33,7 +32,7 @@ func NewDbConnection(viper *viper.Viper) (*sql.DB) {
 	return db
 }
 
-func CloseDB(dbConn *sql.DB){
+func CloseDB(dbConn *sql.DB) {
 	err := dbConn.Close()
 	if err != nil {
 		log.Fatal("got error when closing the DB connection", err)

@@ -11,6 +11,7 @@ import (
 
 type UserUsecase interface {
 	RegisterUser(ctx context.Context, user *entity.Users) error
+	LoginUser(ctx context.Context, user *entity.Login) error
 }
 
 type UserController struct {
@@ -45,6 +46,37 @@ func (uh *UserController) Register(ctx *gin.Context) {
 		ID:    data.ID,
 		Email: data.Email,
 		Name:  data.Name,
+	}
+
+	ctx.JSON(http.StatusCreated, dto.Response{
+		Success: true,
+		Data:    res,
+	})
+}
+
+
+func (uh *UserController) Login(ctx *gin.Context) {
+	var payload dto.LoginReq
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	data := entity.Login{
+		Email:    payload.Email,
+		Password: payload.Password,
+	}
+
+	if err := uh.uuc.LoginUser(ctx, &data); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	res := dto.LoginRes{
+		ID:    data.ID,
+		Email: data.Email,
+		Name:  data.Name,
+		Token: data.Token,
 	}
 
 	ctx.JSON(http.StatusCreated, dto.Response{

@@ -27,11 +27,11 @@ func ErrorMiddleware() gin.HandlerFunc {
 
 			for _, fe := range ve {
 				log.Println(fe.Error())
-				
+
 				fieldErrors = append(fieldErrors, fmt.Sprintf("invalid input on field %s", fe.Field()))
 			}
 
-			errorResponse := dto.ErrorResponse {
+			errorResponse := dto.ErrorResponse{
 				Message: "input validation errors",
 				Details: fieldErrors,
 			}
@@ -44,7 +44,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 		if errors.As(err, &ce) {
 			log.Println(ce.ErrorLog)
 
-			ctx.JSON(ce.GetHTTPErrorCode(), dto.ResponseError(dto.ErrorResponse {
+			ctx.JSON(ce.GetHTTPErrorCode(), dto.ResponseError(dto.ErrorResponse{
 				Message: ce.ErrorMessage,
 			}))
 			return

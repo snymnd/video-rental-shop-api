@@ -17,16 +17,18 @@ type UsersRepository interface {
 }
 
 type UsersUsecase struct {
-	ur UsersRepository
+	ur    UsersRepository
+	token TokenManager
 }
 
-type Token interface {
-	Generate(userID string) (string, error)
+type TokenManager interface {
+	Generate(userID string, role string) (string, error)
 }
 
-func NewUsersUsecase(ur UsersRepository) *UsersUsecase {
+func NewUsersUsecase(ur UsersRepository, token TokenManager) *UsersUsecase {
 	return &UsersUsecase{
-		ur: ur,
+		ur:    ur,
+		token: token,
 	}
 }
 
@@ -60,3 +62,37 @@ func (uus *UsersUsecase) RegisterUser(ctx context.Context, user *entity.Users) e
 	return nil
 }
 
+func (uus *UsersUsecase) LoginUser(ctx context.Context, userLogin *entity.Login) error {
+	// get user by email
+	userLogin.Email = strings.ToLower(userLogin.Email)
+	user, userErr := uus.ur.GetUserByEmail(ctx, userLogin.Email)
+	if userErr != nil {
+		if errors.Is(userErr, customerrors.ErrUserNotFound) {
+			return customerrors.NewError(
+				"email or password is invalid",
+				userErr,
+				customerrors.ItemNotExist,
+			)
+		}
+	}
+	userLogin.ID = user.ID
+	userLogin.Name = user.Name
+
+	// validate password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userLogin.Password)); err != nil {
+		return customerrors.NewError(
+			"email or password is invalid",
+			err,
+			customerrors.CommonErr,
+		)
+	}
+
+	// generate tokenStr
+	tokenStr, tokenErr := uus.token.Generate(user.ID, user.Role)
+	if tokenErr != nil {
+		return customerrors.NewError("token generation fail", tokenErr, customerrors.CommonErr)
+	}
+	userLogin.Token = tokenStr
+
+	return nil
+}

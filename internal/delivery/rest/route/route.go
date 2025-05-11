@@ -8,8 +8,8 @@ import (
 )
 
 type RouteConfig struct {
-	App               *gin.Engine
-	UserController    *rest.UserController
+	App            *gin.Engine
+	UserController *rest.UserController
 }
 
 func (c *RouteConfig) Setup() {
@@ -20,4 +20,5 @@ func (c *RouteConfig) Setup() {
 
 func (c *RouteConfig) SetupPublicRoute() {
 	c.App.POST("/auth/register", c.UserController.Register)
+	c.App.POST("/auth/login", c.UserController.Login)
 }
