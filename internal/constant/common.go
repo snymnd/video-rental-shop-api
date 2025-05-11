@@ -1,0 +1,6 @@
+package constant
+
+const (
+	ENV_GRACEFUL_TIMEOUT_KEY      = "GRACEFUL_TIMEOUT"
+	ENV_SERVER_ADDRESS      = "SERVER_ADDRESS"
+)
