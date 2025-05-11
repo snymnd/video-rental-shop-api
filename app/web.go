@@ -6,34 +6,23 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
-	"vrs-api/internal/constant"
-
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
+	"vrs-api/internal/config"
 )
 
 func Run() {
-	// load env
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("failed to load env", err)
-	}
-
 	// init gin router
-	r := gin.New()
-	r.ContextWithFallback = true
+	viperConfig := config.NewViper()
+	router := config.NewGin()
 
-	// start server
-	port := os.Getenv(constant.ENV_SERVER_ADDRESS)
-
+	
 	// Create http.Server
+	port := ":"+viperConfig.GetString("SERVER_ADDRESS")
 	server := &http.Server{
 		Addr:    port,
-		Handler: r.Handler(),
+		Handler: router.Handler(),
 	}
-
 	go func() {
 		// service connections
 		log.Printf("Server started, listen on port %s", port)
@@ -48,11 +37,7 @@ func Run() {
 	<-quit
 
 	log.Println("Shutdown Server ...")
-	timeout, strconvErr := strconv.Atoi(os.Getenv(constant.ENV_GRACEFUL_TIMEOUT_KEY))
-	const defaultTimeout = 1
-	if strconvErr != nil {
-		timeout = defaultTimeout
-	}
+	timeout := viperConfig.GetInt("GRACEFUL_TIMEOUT")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
