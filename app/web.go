@@ -15,19 +15,23 @@ func Run() {
 	viperConfig := config.NewViper()
 	dbConn := config.NewDbConnection(viperConfig)
 	defer config.CloseDB(dbConn)
-	router := config.NewGin()
+	app := config.NewGin()
 
+	config.Bootstrap(&config.BootstrapConfig{
+		DB:       dbConn,
+		App:      app,
+		Config:   viperConfig,
+	})
 
-	
 	// Create http.Server
 	port := ":"+viperConfig.GetString("SERVER_ADDRESS")
 	server := &http.Server{
 		Addr:    port,
-		Handler: router.Handler(),
+		Handler: app.Handler(),
 	}
 	go func() {
-		// service connections
 		log.Printf("Server started, listen on port %s", port)
+		
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
