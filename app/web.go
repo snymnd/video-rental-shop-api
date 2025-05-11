@@ -12,9 +12,11 @@ import (
 )
 
 func Run() {
-	// init gin router
 	viperConfig := config.NewViper()
+	dbConn := config.NewDbConnection(viperConfig)
+	defer config.CloseDB(dbConn)
 	router := config.NewGin()
+
 
 	
 	// Create http.Server
