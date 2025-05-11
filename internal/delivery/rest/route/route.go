@@ -19,6 +19,7 @@ func (c *RouteConfig) Setup() {
 }
 
 func (c *RouteConfig) SetupPublicRoute() {
-	c.App.POST("/auth/register", c.UserController.Register)
-	c.App.POST("/auth/login", c.UserController.Login)
+	v1 := c.App.Group("/v1")
+	v1.POST("/auth/register", c.UserController.Register)
+	v1.POST("/auth/login", c.UserController.Login)
 }
