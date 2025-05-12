@@ -18,11 +18,12 @@ func NewUserRepository(conn *sql.DB) *UserRepository {
 
 func (ur *UserRepository) Create(ctx context.Context, user *entity.Users) error {
 	query := `insert into users (name, email, password) 
-				values ($1, $2, $3) returning id, created_at, updated_at;`
+				values ($1, $2, $3) returning id, role, created_at, updated_at;`
 
 	if err := ur.conn.QueryRowContext(ctx, query, user.Name, user.Email, user.Password).
 		Scan(
 			&user.ID,
+			&user.Role,
 			&user.CreatedAt,
 			&user.UpdatedAt,
 		); err != nil {
@@ -57,7 +58,7 @@ func (br *UserRepository) CheckIsEmailExist(ctx context.Context, email string) (
 }
 
 func (br *UserRepository) GetUserByEmail(ctx context.Context, email string) (*entity.Users, error) {
-	query := `select id, name, email, password, created_at, updated_at 
+	query := `select id, name, email, password, role, created_at, updated_at 
 				from users
 				where LOWER(email) = $1`
 	var user entity.Users
@@ -67,6 +68,7 @@ func (br *UserRepository) GetUserByEmail(ctx context.Context, email string) (*en
 		&user.Name,
 		&user.Email,
 		&user.Password,
+		&user.Role,
 		&user.CreatedAt,
 		&user.UpdatedAt,
 	); err != nil {

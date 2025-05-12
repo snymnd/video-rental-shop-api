@@ -22,7 +22,7 @@ func NewUserController(router *gin.Engine, uuc UserUsecase) *UserController {
 	return &UserController{
 		uuc: uuc,
 	}
-} 
+}
 
 func (uh *UserController) Register(ctx *gin.Context) {
 	var payload dto.RegisterReq
@@ -44,6 +44,7 @@ func (uh *UserController) Register(ctx *gin.Context) {
 
 	res := dto.RegisterRes{
 		ID:    data.ID,
+		Role:  data.Role,
 		Email: data.Email,
 		Name:  data.Name,
 	}
@@ -53,7 +54,6 @@ func (uh *UserController) Register(ctx *gin.Context) {
 		Data:    res,
 	})
 }
-
 
 func (uh *UserController) Login(ctx *gin.Context) {
 	var payload dto.LoginReq
@@ -76,6 +76,7 @@ func (uh *UserController) Login(ctx *gin.Context) {
 		ID:    data.ID,
 		Email: data.Email,
 		Name:  data.Name,
+		Role:  data.Role,
 		Token: data.Token,
 	}
 

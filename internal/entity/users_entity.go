@@ -17,6 +17,7 @@ type Login struct {
 	ID       string
 	Name     string
 	Email    string
+	Role     string
 	Password string
 	Token    string
 }

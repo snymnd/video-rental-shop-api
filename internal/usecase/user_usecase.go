@@ -77,6 +77,7 @@ func (uus *UsersUsecase) LoginUser(ctx context.Context, userLogin *entity.Login)
 	}
 	userLogin.ID = user.ID
 	userLogin.Name = user.Name
+	userLogin.Role = user.Role
 
 	// validate password
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(userLogin.Password)); err != nil {
