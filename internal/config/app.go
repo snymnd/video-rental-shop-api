@@ -6,6 +6,7 @@ import (
 	"vrs-api/internal/delivery/rest/route"
 	"vrs-api/internal/repository/postgresql"
 	"vrs-api/internal/usecase"
+	util "vrs-api/internal/util/jwt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -14,7 +15,7 @@ import (
 type BootstrapConfig struct {
 	DB           *sql.DB
 	App          *gin.Engine
-	TokenManager *TokenManager
+	TokenManager *util.TokenManager
 	Config       *viper.Viper
 }
 
@@ -22,6 +23,7 @@ func Bootstrap(config *BootstrapConfig) {
 
 	// setup repositories
 	userRepository := postgresql.NewUserRepository(config.DB)
+	rbacRepository := postgresql.NewRBACRepository(config.DB)
 
 	// setup use cases
 	userUseCase := usecase.NewUsersUsecase(userRepository, config.TokenManager)
@@ -31,7 +33,9 @@ func Bootstrap(config *BootstrapConfig) {
 
 	routeConfig := route.RouteConfig{
 		App:            config.App,
+		TokenManager:   config.TokenManager,
 		UserController: userController,
+		RBACRepository: rbacRepository,
 	}
 	routeConfig.Setup()
 }

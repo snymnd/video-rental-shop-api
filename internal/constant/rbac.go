@@ -1,0 +1,18 @@
+package constant
+
+const (
+	RSC_USERS int = iota + 1
+	RSC_VIDEOS
+	RSC_RENTALS
+	RSC_PAYMENTS
+)
+
+const (
+	PERM_CREATE int = iota + 1
+	PERM_READ_OWN
+	PERM_READ_ALL
+	PERM_UPDATE_OWN
+	PERM_UPDATE_ALL
+	PERM_DELETE_OWN
+	PERM_DELETE_ALL
+)

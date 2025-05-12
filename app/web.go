@@ -9,12 +9,13 @@ import (
 	"syscall"
 	"time"
 	"vrs-api/internal/config"
+	util "vrs-api/internal/util/jwt"
 )
 
 func Run() {
 	viperConfig := config.NewViper()
 	dbConn := config.NewDbConnection(viperConfig)
-	tokenManager := config.NewTokenManager(viperConfig)
+	tokenManager := util.NewTokenManager(viperConfig)
 	defer config.CloseDB(dbConn)
 	app := config.NewGin()
 

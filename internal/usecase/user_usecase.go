@@ -22,7 +22,7 @@ type UsersUsecase struct {
 }
 
 type TokenManager interface {
-	Generate(userID string, role string) (string, error)
+	Generate(userID string, role int) (string, error)
 }
 
 func NewUsersUsecase(ur UsersRepository, token TokenManager) *UsersUsecase {
