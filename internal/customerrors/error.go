@@ -44,7 +44,8 @@ func (err CustomError) GetHTTPErrorCode() int {
 const (
 	ItemAlreadyExist       = 40400
 	InvalidAction          = 41400
-	Unauthorized           = 40401
+	Unauthenticate         = 40401
+	Unauthorized           = 40402
 	ItemNotExist           = 40404
 	CommonErr              = 50500
 	DatabaseExecutionError = 51500

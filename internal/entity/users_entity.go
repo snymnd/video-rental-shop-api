@@ -7,7 +7,7 @@ type Users struct {
 	Name      string
 	Email     string
 	Password  string
-	Role      string
+	Role      int
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time
@@ -17,7 +17,7 @@ type Login struct {
 	ID       string
 	Name     string
 	Email    string
-	Role     string
+	Role     int
 	Password string
 	Token    string
 }

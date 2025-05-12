@@ -1,4 +1,4 @@
-package config
+package util
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ type TokenManager struct {
 }
 
 type JWTCustomClaims struct {
-	Role string `json:"role"`
+	Role int `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -24,7 +24,7 @@ func NewTokenManager(config *viper.Viper) *TokenManager {
 	}
 }
 
-func (tm *TokenManager) Generate(userID string, role string) (string, error) {
+func (tm *TokenManager) Generate(userID string, role int) (string, error) {
 	now := time.Now()
 
 	registeredClaims := JWTCustomClaims{
@@ -89,7 +89,7 @@ func (tm *TokenManager) Parse(tokenString string) (*JWTCustomClaims, error) {
 	}
 
 	userRole := claims.Role
-	if userRole == "" {
+	if userRole == 0 {
 		return nil, errors.New("user role is not found on claims")
 	}
 
