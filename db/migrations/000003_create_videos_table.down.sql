@@ -1,0 +1,6 @@
+BEGIN;
+
+DROP TABLE IF EXISTS videos;
+DROP TYPE IF EXISTS video_format;
+
+COMMIT;
