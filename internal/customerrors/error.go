@@ -34,6 +34,8 @@ func (err CustomError) GetHTTPErrorCode() int {
 		return http.StatusBadRequest
 	case Unauthorized:
 		return http.StatusUnauthorized
+	case Unauthenticate:
+		return http.StatusUnauthorized
 	case DatabaseExecutionError:
 		return http.StatusInternalServerError
 	default:
