@@ -3,10 +3,12 @@ package customerrors
 import (
 	"errors"
 	"net/http"
+	"vrs-api/internal/dto"
 )
 
 type CustomError struct {
 	ErrorMessage string
+	Details      any
 	ErrorLog     error
 	ErrorCode    int
 }
@@ -15,12 +17,18 @@ func (err CustomError) Error() string {
 	return err.ErrorMessage
 }
 
-// error builder for a known error
-func NewError(message string, errorLog error, errorCode int) *CustomError {
+func NewError(message string, errorLog error, errorCode int, details ...[]dto.DetailsError) *CustomError {
+
+	var detail any
+	if len(details) > 0 {
+		detail = details[0]
+	}
+
 	return &CustomError{
 		ErrorMessage: message,
 		ErrorLog:     errorLog,
 		ErrorCode:    errorCode,
+		Details:      detail,
 	}
 }
 
@@ -54,5 +62,15 @@ const (
 )
 
 var (
-	ErrUserNotFound = errors.New("user not found")
+	ErrUserNotFound         = errors.New("user not found")
+	ErrFailedGetAuthPayload = NewError(
+		"user credential identification failed",
+		errors.New("failed to get authorization payload from context"),
+		CommonErr,
+	)
+	ErrUserIDNotFoundInAuthPayload = NewError(
+		"user credential identification failed",
+		errors.New("user id cannot be found on auth payload subject"),
+		CommonErr,
+	)
 )
