@@ -10,6 +10,7 @@ type (
 		Format            string
 		TotalStock        int
 		AvailableStock    int
+		GenreIDs          []int
 		RentPrice         float64
 		CoverPath         *string
 		ProductionCompany *string

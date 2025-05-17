@@ -67,6 +67,7 @@ func (rc *RentalController) RentVideos(ctx *gin.Context) {
 			AvailableStock:    video.AvailableStock - 1,
 			CoverPath:         video.CoverPath,
 			ProductionCompany: video.ProductionCompany,
+			GenreIDs:          video.GenreIDs,
 		}
 		videosRes = append(videosRes, video)
 	}
