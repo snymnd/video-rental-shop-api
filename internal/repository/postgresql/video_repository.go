@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"vrs-api/internal/customerrors"
 	"vrs-api/internal/entity"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type VideoRepository struct {
@@ -17,12 +19,12 @@ func NewVideoRepository(conn *sql.DB) *VideoRepository {
 }
 
 func (vr *VideoRepository) Create(ctx context.Context, video *entity.Video) error {
-	query := `insert into videos(title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock) 
+	query := `insert into videos(title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids) 
 				values 
-				($1, $2, $3, $4, $5, $6, $7, $8)
+				($1, $2, $3, $4, $5, $6, $7, $8, $9)
 				returning id, created_at, updated_at, deleted_at`
 
-	if err := vr.conn.QueryRowContext(ctx, query, video.Title, video.Overview, video.Format, video.RentPrice, video.ProductionCompany, video.CoverPath, video.TotalStock, video.AvailableStock).
+	if err := vr.conn.QueryRowContext(ctx, query, video.Title, video.Overview, video.Format, video.RentPrice, video.ProductionCompany, video.CoverPath, video.TotalStock, video.AvailableStock, video.GenreIDs).
 		Scan(
 			&video.ID,
 			&video.CreatedAt,
@@ -40,7 +42,7 @@ func (vr *VideoRepository) Create(ctx context.Context, video *entity.Video) erro
 }
 
 func (vr *VideoRepository) FetchAll(ctx context.Context) (videos entity.Videos, err error) {
-	query := `select id, title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock
+	query := `select id, title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids
 				from videos`
 
 	rows, rowsErr := vr.conn.QueryContext(ctx, query)
@@ -53,6 +55,7 @@ func (vr *VideoRepository) FetchAll(ctx context.Context) (videos entity.Videos, 
 	}
 	defer rows.Close()
 
+	m := pgtype.NewMap()
 	var video entity.Video
 	for rows.Next() {
 		if err = rows.Scan(
@@ -65,6 +68,7 @@ func (vr *VideoRepository) FetchAll(ctx context.Context) (videos entity.Videos, 
 			&video.CoverPath,
 			&video.TotalStock,
 			&video.AvailableStock,
+			m.SQLScanner(&video.GenreIDs),
 		); err != nil {
 			return videos, customerrors.NewError(
 				"failed to fetch video data",
@@ -87,7 +91,7 @@ func (vr *VideoRepository) FetchAll(ctx context.Context) (videos entity.Videos, 
 }
 
 func (vr *VideoRepository) FetchMultipleVideos(ctx context.Context, videosID []int) (videos entity.Videos, err error) {
-	query := `select id, title, overview, format, production_company, rent_price, cover_path, total_stock, available_stock
+	query := `select id, title, overview, format, production_company, rent_price, cover_path, total_stock, available_stock, genre_ids
 				from videos
 				where id in (`
 
@@ -116,6 +120,7 @@ func (vr *VideoRepository) FetchMultipleVideos(ctx context.Context, videosID []i
 	}
 	defer rows.Close()
 
+	m := pgtype.NewMap()
 	var video entity.Video
 	for rows.Next() {
 		if err = rows.Scan(
@@ -128,6 +133,7 @@ func (vr *VideoRepository) FetchMultipleVideos(ctx context.Context, videosID []i
 			&video.CoverPath,
 			&video.TotalStock,
 			&video.AvailableStock,
+			m.SQLScanner(&video.GenreIDs),
 		); err != nil {
 			return videos, customerrors.NewError(
 				"failed to scan video data",

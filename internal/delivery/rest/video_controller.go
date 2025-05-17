@@ -39,6 +39,7 @@ func (vc *VideoController) CreateVideo(ctx *gin.Context) {
 		AvailableStock:    payload.TotalStock,
 		CoverPath:         payload.CoverPath,
 		ProductionCompany: payload.ProductionCompany,
+		GenreIDs:          payload.GenreIDs,
 	}
 
 	if err := vc.vuc.CreateVideo(ctx, &data); err != nil {
@@ -56,6 +57,7 @@ func (vc *VideoController) CreateVideo(ctx *gin.Context) {
 		AvailableStock:    data.TotalStock,
 		CoverPath:         data.CoverPath,
 		ProductionCompany: data.ProductionCompany,
+		GenreIDs:          data.GenreIDs,
 	}
 
 	ctx.JSON(http.StatusCreated, dto.Response{
@@ -82,6 +84,7 @@ func (vc *VideoController) GetVideos(ctx *gin.Context) {
 			AvailableStock:    data.AvailableStock,
 			CoverPath:         data.CoverPath,
 			ProductionCompany: data.ProductionCompany,
+			GenreIDs:          data.GenreIDs,
 		}
 		videos = append(videos, video)
 	}
