@@ -18,7 +18,7 @@ type VideoController struct {
 	vuc VideoUsecase
 }
 
-func NewVideoController(router *gin.Engine, vuc VideoUsecase) *VideoController {
+func NewVideoController(vuc VideoUsecase) *VideoController {
 	return &VideoController{vuc}
 }
 
@@ -34,6 +34,7 @@ func (vc *VideoController) CreateVideo(ctx *gin.Context) {
 		Overview:   payload.Overview,
 		Format:     payload.Format,
 		TotalStock: payload.TotalStock,
+		RentPrice:  payload.RentPrice,
 		// initially available stock = total stock
 		AvailableStock:    payload.TotalStock,
 		CoverPath:         payload.CoverPath,
@@ -51,6 +52,7 @@ func (vc *VideoController) CreateVideo(ctx *gin.Context) {
 		Overview:          data.Overview,
 		Format:            data.Format,
 		TotalStock:        data.TotalStock,
+		RentPrice:         data.RentPrice,
 		AvailableStock:    data.TotalStock,
 		CoverPath:         data.CoverPath,
 		ProductionCompany: data.ProductionCompany,
@@ -71,7 +73,7 @@ func (vc *VideoController) GetVideos(ctx *gin.Context) {
 
 	var videos dto.GetVideosRes
 	for _, data := range datas {
-		video := dto.VideosRes{
+		video := dto.VideoRes{
 			ID:                data.ID,
 			Title:             data.Title,
 			Overview:          data.Overview,
