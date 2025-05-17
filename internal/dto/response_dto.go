@@ -5,6 +5,11 @@ type ErrorResponse struct {
 	Details any    `json:"details,omitempty"`
 }
 
+type DetailsError struct {
+	Title   string `json:"field"`
+	Message string `json:"message"`
+}
+
 type Response struct {
 	Success bool           `json:"success"`
 	Error   *ErrorResponse `json:"error,omitempty"`
