@@ -12,11 +12,12 @@ import (
 )
 
 type RouteConfig struct {
-	App             *gin.Engine
-	UserController  *rest.UserController
-	VideoController *rest.VideoController
-	RBACRepository  *postgresql.RBACRepository
-	TokenManager    *util.TokenManager
+	App              *gin.Engine
+	UserController   *rest.UserController
+	VideoController  *rest.VideoController
+	RentalController *rest.RentalController
+	RBACRepository   *postgresql.RBACRepository
+	TokenManager     *util.TokenManager
 }
 
 func (c *RouteConfig) Setup() {
@@ -42,6 +43,10 @@ func (c *RouteConfig) SetupPrivateRoute() {
 	v1.GET("/videos",
 		middleware.AuthorizationMiddleware(constant.PERM_READ_ALL, constant.RSC_VIDEOS, c.RBACRepository),
 		c.VideoController.GetVideos,
+	)
+	v1.POST("/rentals",
+		middleware.AuthorizationMiddleware(constant.PERM_CREATE, constant.RSC_RENTALS, c.RBACRepository),
+		c.RentalController.RentVideos,
 	)
 	v1.GET("/private", func(ctx *gin.Context) {
 		ctx.JSON(200, dto.Response{

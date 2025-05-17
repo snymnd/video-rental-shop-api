@@ -25,21 +25,27 @@ func Bootstrap(config *BootstrapConfig) {
 	userRepository := postgresql.NewUserRepository(config.DB)
 	rbacRepository := postgresql.NewRBACRepository(config.DB)
 	videoRepository := postgresql.NewVideoRepository(config.DB)
+	rentalRepository := postgresql.NewRentalRepository(config.DB)
+	paymentRepository := postgresql.NewPaymentRepository(config.DB)
+	txRepository := postgresql.NewTxRepository(config.DB)
 
 	// setup use cases
 	userUseCase := usecase.NewUsersUsecase(userRepository, config.TokenManager)
 	videoUsecase := usecase.NewVideoUsecase(videoRepository)
+	rentalUsecase := usecase.NewRentalUsecase(rentalRepository, videoRepository, paymentRepository, txRepository)
 
 	// setup controller
-	userController := rest.NewUserController(config.App, userUseCase)
-	videoController := rest.NewVideoController(config.App, videoUsecase)
+	userController := rest.NewUserController(userUseCase)
+	videoController := rest.NewVideoController(videoUsecase)
+	rentalController := rest.NewRentalController(rentalUsecase)
 
 	routeConfig := route.RouteConfig{
-		App:             config.App,
-		TokenManager:    config.TokenManager,
-		UserController:  userController,
-		RBACRepository:  rbacRepository,
-		VideoController: videoController,
+		App:              config.App,
+		TokenManager:     config.TokenManager,
+		UserController:   userController,
+		RBACRepository:   rbacRepository,
+		VideoController:  videoController,
+		RentalController: rentalController,
 	}
 	routeConfig.Setup()
 }

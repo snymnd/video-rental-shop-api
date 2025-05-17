@@ -18,10 +18,8 @@ type UserController struct {
 	uuc UserUsecase
 }
 
-func NewUserController(router *gin.Engine, uuc UserUsecase) *UserController {
-	return &UserController{
-		uuc: uuc,
-	}
+func NewUserController(uuc UserUsecase) *UserController {
+	return &UserController{uuc}
 }
 
 func (uh *UserController) Register(ctx *gin.Context) {
