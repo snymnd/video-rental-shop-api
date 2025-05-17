@@ -1,4 +1,3 @@
-
 INSERT INTO roles(id, name, description)
 VALUES
 (1, 'user', 'default and general role'),
