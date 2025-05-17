@@ -10,8 +10,9 @@ type (
 		Format            string
 		TotalStock        int
 		AvailableStock    int
-		CoverPath         string
-		ProductionCompany string
+		RentPrice         float64
+		CoverPath         *string
+		ProductionCompany *string
 		CreatedAt         time.Time
 		UpdatedAt         time.Time
 		DeletedAt         *time.Time
