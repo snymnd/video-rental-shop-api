@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS videos(
   id BIGSERIAL PRIMARY KEY,
   title VARCHAR NOT NULL,
   overview VARCHAR,
+  genre_ids INT[],
   format video_format,
   production_company VARCHAR,
   rent_price DECIMAL(12, 2),

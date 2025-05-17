@@ -1,4 +1,3 @@
-
 INSERT INTO users(name, role, email, password) 
 VALUES 
 ('user1',1,'user1@mail.com','$2a$10$ggtLJAAGngepLt8tVKrVpOlTT5lc/.GptgjfT845ug9Phov2yJd8S'), -- password = "password"
