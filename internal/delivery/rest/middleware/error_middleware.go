@@ -26,7 +26,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 			fieldErrors := make([]dto.DetailsError, 0)
 
 			for _, fe := range ve {
-				log.Println(fe.Error())
+				log.Println("ERROR:", fe.Error())
 
 				fieldErrors = append(fieldErrors, dto.DetailsError{
 					Title:   fe.Field(),
@@ -45,7 +45,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 
 		var ce *customerrors.CustomError
 		if errors.As(err, &ce) {
-			log.Println(ce.ErrorLog)
+			log.Println("ERROR:", ce.ErrorLog)
 
 			ctx.JSON(ce.GetHTTPErrorCode(), dto.ResponseError(dto.ErrorResponse{
 				Message: ce.ErrorMessage,
@@ -54,7 +54,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		log.Println(err.Error())
+		log.Println("ERROR:", err.Error())
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, dto.ResponseError(dto.ErrorResponse{Message: "something went wrong"}))
 	}
 }

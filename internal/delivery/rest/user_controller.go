@@ -78,7 +78,7 @@ func (uh *UserController) Login(ctx *gin.Context) {
 		Token: data.Token,
 	}
 
-	ctx.JSON(http.StatusCreated, dto.Response{
+	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
 		Data:    res,
 	})

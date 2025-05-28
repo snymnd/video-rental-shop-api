@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 	"vrs-api/internal/customerrors"
 	"vrs-api/internal/entity"
 
@@ -41,24 +42,89 @@ func (vr *VideoRepository) Create(ctx context.Context, video *entity.Video) erro
 	return nil
 }
 
-func (vr *VideoRepository) FetchAll(ctx context.Context) (videos entity.Videos, err error) {
-	query := `select id, title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids
-				from videos`
+func (vr *VideoRepository) FetchAll(ctx context.Context, params entity.GetVideosParams) (entity.GetVideosReturn, error) {
+	baseQuery := `select id, title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids
+				from videos where deleted_at is null`
+	totalRowQuery := `select count(id) as total_row from videos where deleted_at is null`
 
-	rows, rowsErr := vr.conn.QueryContext(ctx, query)
+	// Filters
+	paramsQuery := ""
+	filterArgs := []any{}
+	argIdx := 1
+	if params.Title != "" {
+		paramsQuery += fmt.Sprintf(" and title ilike $%d", argIdx)
+		filterArgs = append(filterArgs, "%"+params.Title+"%")
+		argIdx++
+	}
+
+	if len(params.GenreIDs) > 0 {
+		paramsQuery += fmt.Sprintf(" and genre_ids && $%d", argIdx)
+		filterArgs = append(filterArgs, params.GenreIDs)
+		argIdx++
+	}
+
+	// Order & Sort
+	sortArgs := []any{}
+	direction := "asc"
+	params.SortOrder = strings.ToLower(params.SortOrder)
+	if params.SortOrder != "" && (params.SortOrder == "asc" || params.SortOrder == "desc") {
+		direction = params.SortOrder
+	}
+
+	sortQuery := " order by id"
+	// Validate against allowed columns
+	allowedColumns := map[string]bool{"id": true, "title": true, "created_at": true, "total_stock": true, "available_stock": true, "rent_price": true}
+	if len(params.OrderBy) > 0 {
+		sortQuery = " order by "
+		for _, column := range params.OrderBy {
+			column = strings.ToLower(column)
+			if allowedColumns[column] {
+				sortQuery += fmt.Sprintf("%s %s,", column, direction)
+			}
+		}
+		// remove extra "," from sortQuery
+		sortQuery = strings.TrimRight(sortQuery, ",")
+	}
+
+	if params.Limit > 0 {
+		sortQuery += fmt.Sprintf(" limit $%d", argIdx)
+		sortArgs = append(sortArgs, params.Limit)
+		argIdx++
+
+		if params.Page > 0 {
+			offset := (params.Page - 1) * params.Limit
+			sortQuery += fmt.Sprintf(" offset $%d", argIdx)
+			sortArgs = append(sortArgs, offset)
+			argIdx++
+		}
+	}
+
+	baseQuery += paramsQuery + sortQuery
+	totalRowQuery += paramsQuery
+	rows, rowsErr := vr.conn.QueryContext(ctx, baseQuery, append(filterArgs, sortArgs...)...)
 	if rowsErr != nil {
-		return videos, customerrors.NewError(
-			"failed to create video data",
+		return entity.GetVideosReturn{}, customerrors.NewError(
+			"failed to get videos data",
 			rowsErr,
 			customerrors.DatabaseExecutionError,
 		)
 	}
 	defer rows.Close()
 
+	var totalRow int
+	if err := vr.conn.QueryRowContext(ctx, totalRowQuery, filterArgs...).Scan(&totalRow); err != nil {
+		return entity.GetVideosReturn{}, customerrors.NewError(
+			"failed to get total videos data",
+			err,
+			customerrors.DatabaseExecutionError,
+		)
+	}
+
 	m := pgtype.NewMap()
+	videos := entity.Videos{}
 	var video entity.Video
 	for rows.Next() {
-		if err = rows.Scan(
+		if err := rows.Scan(
 			&video.ID,
 			&video.Title,
 			&video.Overview,
@@ -70,7 +136,7 @@ func (vr *VideoRepository) FetchAll(ctx context.Context) (videos entity.Videos, 
 			&video.AvailableStock,
 			m.SQLScanner(&video.GenreIDs),
 		); err != nil {
-			return videos, customerrors.NewError(
+			return entity.GetVideosReturn{}, customerrors.NewError(
 				"failed to fetch video data",
 				err,
 				customerrors.DatabaseExecutionError,
@@ -78,16 +144,38 @@ func (vr *VideoRepository) FetchAll(ctx context.Context) (videos entity.Videos, 
 		}
 		videos = append(videos, video)
 	}
-
-	if err = rows.Err(); err != nil {
-		return videos, customerrors.NewError(
+	if err := rows.Err(); err != nil {
+		return entity.GetVideosReturn{}, customerrors.NewError(
 			"failed to fetch video data",
 			err,
 			customerrors.DatabaseExecutionError,
 		)
 	}
 
-	return videos, nil
+	pageInfo := entity.PageInfo{
+		Page:    params.Page,
+		Limit:   params.Limit,
+		OrderBy: params.OrderBy,
+		Filters: []entity.PageFilter{
+			{
+				Field: "title",
+				Value: params.Title,
+			},
+			{
+				Field: "genre_ids",
+				Value: params.GenreIDs,
+			},
+		},
+		OrderSort: params.SortOrder,
+		TotalRow:  totalRow,
+	}
+
+	videosReturn := entity.GetVideosReturn{
+		PageInfo: pageInfo,
+		Entries:  videos,
+	}
+
+	return videosReturn, nil
 }
 
 func (vr *VideoRepository) FetchMultipleVideos(ctx context.Context, videosID []int) (videos entity.Videos, err error) {

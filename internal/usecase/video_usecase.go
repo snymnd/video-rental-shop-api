@@ -7,7 +7,7 @@ import (
 
 type VideoRepository interface {
 	Create(ctx context.Context, video *entity.Video) error
-	FetchAll(ctx context.Context) (entity.Videos, error)
+	FetchAll(ctx context.Context, params entity.GetVideosParams) (entity.GetVideosReturn, error)
 }
 
 type VideoUsecase struct {
@@ -26,8 +26,9 @@ func (vu *VideoUsecase) CreateVideo(ctx context.Context, video *entity.Video) er
 	return nil
 }
 
-func (vu *VideoUsecase) GetVideos(ctx context.Context) (videos entity.Videos, err error) {
-	videos, err = vu.vr.FetchAll(ctx)
+func (vu *VideoUsecase) GetVideos(ctx context.Context, params entity.GetVideosParams) (videos entity.GetVideosReturn, err error) {
+
+	videos, err = vu.vr.FetchAll(ctx, params)
 	if err != nil {
 		return videos, err
 	}
