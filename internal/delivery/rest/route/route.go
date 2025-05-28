@@ -1,6 +1,7 @@
 package route
 
 import (
+	"net/http"
 	"vrs-api/internal/constant"
 	"vrs-api/internal/delivery/rest"
 	"vrs-api/internal/delivery/rest/middleware"
@@ -29,6 +30,12 @@ func (c *RouteConfig) Setup() {
 
 func (c *RouteConfig) SetupPublicRoute() {
 	v1 := c.App.Group("/v1")
+	v1.GET("/welcome", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusAccepted, dto.Response{
+			Success: true,
+			Data:    "Welcome to video rental API",
+		})
+	})
 	v1.POST("/auth/register", c.UserController.Register)
 	v1.POST("/auth/login", c.UserController.Login)
 }

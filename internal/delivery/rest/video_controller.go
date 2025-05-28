@@ -3,6 +3,7 @@ package rest
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"vrs-api/internal/dto"
 	"vrs-api/internal/entity"
 
@@ -11,7 +12,7 @@ import (
 
 type VideoUsecase interface {
 	CreateVideo(ctx context.Context, video *entity.Video) error
-	GetVideos(ctx context.Context) (entity.Videos, error)
+	GetVideos(ctx context.Context, params entity.GetVideosParams) (entity.GetVideosReturn, error)
 }
 
 type VideoController struct {
@@ -67,30 +68,78 @@ func (vc *VideoController) CreateVideo(ctx *gin.Context) {
 }
 
 func (vc *VideoController) GetVideos(ctx *gin.Context) {
-	datas, err := vc.vuc.GetVideos(ctx)
+	var query dto.GetVideosQuery
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		ctx.Error(err)
+		return
+	}
+
+	limit, err := strconv.Atoi(query.Limit)
+	if err != nil {
+		defaultLimit := 0
+		limit = defaultLimit
+	}
+	page, err := strconv.Atoi(query.Page)
+	if err != nil || page <= 0 {
+		defaultPage := 1
+		page = defaultPage
+	}
+
+	params := entity.GetVideosParams{
+		SortOrder: query.OrderSort,
+		GenreIDs:  query.Genres,
+		Title:     query.Title,
+		OrderBy:   query.OrderBy,
+		PaginationQuery: entity.PaginationQuery{
+			Limit: limit,
+			Page:  page,
+		},
+	}
+
+	data, err := vc.vuc.GetVideos(ctx, params)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
 
-	var videos dto.GetVideosRes
-	for _, data := range datas {
+	videos := []dto.VideoRes{}
+	for _, entry := range data.Entries {
 		video := dto.VideoRes{
-			ID:                data.ID,
-			Title:             data.Title,
-			Overview:          data.Overview,
-			Format:            data.Format,
-			TotalStock:        data.TotalStock,
-			AvailableStock:    data.AvailableStock,
-			CoverPath:         data.CoverPath,
-			ProductionCompany: data.ProductionCompany,
-			GenreIDs:          data.GenreIDs,
+			ID:                entry.ID,
+			Title:             entry.Title,
+			Overview:          entry.Overview,
+			Format:            entry.Format,
+			TotalStock:        entry.TotalStock,
+			AvailableStock:    entry.AvailableStock,
+			CoverPath:         entry.CoverPath,
+			ProductionCompany: entry.ProductionCompany,
+			GenreIDs:          entry.GenreIDs,
 		}
 		videos = append(videos, video)
 	}
 
+	var filters []dto.PageFilter
+	for _, filter := range data.PageInfo.Filters {
+		filters = append(filters, dto.PageFilter{
+			Field: filter.Field,
+			Value: filter.Value,
+		})
+	}
+
+	getVideosReturn := dto.PaginatadResponse[dto.VideoRes]{
+		Entries: videos,
+		PageInfo: dto.PageInfo{
+			Page:      data.PageInfo.Page,
+			Limit:     data.PageInfo.Limit,
+			OrderBy:   data.PageInfo.OrderBy,
+			OrderSort: data.PageInfo.OrderSort,
+			Filters:   filters,
+			TotalRow:  data.PageInfo.TotalRow,
+		},
+	}
+
 	ctx.JSON(http.StatusOK, dto.Response{
 		Success: true,
-		Data:    videos,
+		Data:    getVideosReturn,
 	})
 }

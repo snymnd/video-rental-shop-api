@@ -42,5 +42,12 @@ type (
 		UpdatedAt         *time.Time `json:"updated_at,omitempty"`
 	}
 
-	GetVideosRes []VideoRes
+	GetVideosQuery struct {
+		OrderSort string `form:"order_sort,omitempty"`
+		// TODO: validate number on genre ids
+		Genres  []int    `form:"[]genres,omitempty" binding:"omitempty,dive"`
+		Title   string   `form:"title,omitempty"`
+		OrderBy []string `form:"[]order_by,omitempty"`
+		PaginationQuery
+	}
 )

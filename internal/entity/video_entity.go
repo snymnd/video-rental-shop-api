@@ -19,5 +19,18 @@ type (
 		DeletedAt         *time.Time
 	}
 
+	GetVideosParams struct {
+		SortOrder string
+		GenreIDs  []int
+		Title     string
+		OrderBy   []string
+		PaginationQuery
+	}
+
 	Videos []Video
+
+	GetVideosReturn struct {
+		PageInfo PageInfo
+		Entries  Videos
+	}
 )
