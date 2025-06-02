@@ -1,4 +1,4 @@
-INSERT INTO products(title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids) 
+INSERT INTO videos(title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids) 
 VALUES 
 ('The Matrix', 'A computer hacker learns about reality and his role in the fight against machines.', 'bluray', 4.99, 'Warner Bros.', '/covers/matrix.jpg', 10, 8, ARRAY[1, 8]),
 ('Inception', 'A thief who steals corporate secrets through dream-sharing technology is given a final job.', 'dvd', 3.99, 'Warner Bros.', '/covers/inception.jpg', 15, 12, ARRAY[1, 8, 5]),
