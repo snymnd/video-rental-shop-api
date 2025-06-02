@@ -10,4 +10,9 @@ func main() {
 		log.Fatal(err)
 	}
 	log.Println("Migrations applied successfully")
+
+	if err := dbcommand.RunSeeder(); err != nil {
+		log.Fatal(err)
+	}
+	log.Println("Seeds applied successfully")
 }
