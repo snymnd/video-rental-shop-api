@@ -4,7 +4,7 @@ import "time"
 
 type (
 	Video struct {
-		ID                string
+		ID                int
 		Title             string
 		Overview          string
 		Format            string

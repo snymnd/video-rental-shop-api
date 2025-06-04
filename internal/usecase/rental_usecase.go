@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 	"vrs-api/internal/constant"
 	"vrs-api/internal/customerrors"
@@ -13,11 +14,15 @@ import (
 
 type (
 	RentalRepository interface {
-		Create(ctx context.Context, rentals entity.MultipleRentParams) error
+		Creates(ctx context.Context, rentals entity.MultipleRentParams) error
+		FetchMultipleRentals(ctx context.Context, videosID []int, userID string, status constant.RentalStatus) (entity.Rentals, error)
+		UpdatesAddLatefee(ctx context.Context, rentalIDs []int, lateFeePaymentId int) error
+		UpdatesRentalStatus(ctx context.Context, rentalIDs []int, status constant.RentalStatus) error
 	}
 	RentalVideoRepository interface {
 		FetchMultipleVideos(ctx context.Context, videosID []int) (entity.Videos, error)
 		RentMultipleVideos(ctx context.Context, videosID []int) error
+		ReturnMultipleVideos(ctx context.Context, videosID []int) error
 	}
 	PaymentRepository interface {
 		Create(ctx context.Context, payment *entity.Payment) error
@@ -52,7 +57,7 @@ func (ru *RentalUsecase) RentVideos(ctx context.Context, rentVideosParams entity
 		for _, video := range videos {
 			if video.AvailableStock < 1 {
 				unavailableVideosErr = append(unavailableVideosErr, dto.DetailsError{
-					Title:   video.ID,
+					Title:   strconv.Itoa(video.ID),
 					Message: fmt.Sprintf("%s is not available", video.Title),
 				})
 			}
@@ -84,11 +89,12 @@ func (ru *RentalUsecase) RentVideos(ctx context.Context, rentVideosParams entity
 
 		// crate videos rental record
 		rentals := entity.MultipleRentParams{
+			UserID:    rentVideosParams.UserID,
 			VideosID:  rentVideosParams.VideosID,
-			DueDate:   time.Now().Add(time.Hour * 24 * constant.DEFAULT_RENTAL_DUE),
+			DueDate:   time.Now().Local().Add(time.Hour * 24 * constant.DEFAULT_RENTAL_DUE),
 			PaymentID: payment.ID,
 		}
-		if createRentalsErr := ru.rr.Create(txCtx, rentals); createRentalsErr != nil {
+		if createRentalsErr := ru.rr.Creates(txCtx, rentals); createRentalsErr != nil {
 			return createRentalsErr
 		}
 
@@ -96,7 +102,6 @@ func (ru *RentalUsecase) RentVideos(ctx context.Context, rentVideosParams entity
 		if err := ru.vr.RentMultipleVideos(txCtx, rentVideosParams.VideosID); err != nil {
 			return err
 		}
-		// rentReturn.Videos = videos
 
 		return nil
 	}); err != nil {
@@ -104,4 +109,108 @@ func (ru *RentalUsecase) RentVideos(ctx context.Context, rentVideosParams entity
 	}
 
 	return rentReturn, nil
+}
+
+func (ru *RentalUsecase) ReturnVideos(ctx context.Context, renturnVideosParams entity.ReturnVideoParam) (returnVideosReturn entity.ReturnVideoReturn, err error) {
+	if err = ru.txr.WithTx(ctx, func(txCtx context.Context) error {
+		// fetch rentals based on video id and user id
+		rentals, fetchVideoErr := ru.rr.FetchMultipleRentals(txCtx, renturnVideosParams.VideoIDs, renturnVideosParams.UserID, constant.RENTAL_RENTED)
+		if fetchVideoErr != nil {
+			return fetchVideoErr
+		}
+		if len(rentals) <= 0 {
+			return customerrors.NewError(
+				"No rentals found for the specified user and videos",
+				errors.New("no rental records found for the provided userID and videoIDs"),
+				customerrors.ItemNotExist,
+			)
+		}
+
+		videos, fetchVideoErr := ru.vr.FetchMultipleVideos(txCtx, renturnVideosParams.VideoIDs)
+		if fetchVideoErr != nil {
+			return fetchVideoErr
+		}
+		videoIDVideoMap := make(map[int]entity.Video)
+		for _, video := range videos {
+			videoIDVideoMap[video.ID] = video
+		}
+
+		var totalLateFee float64
+		lateRentalIDs := make([]int, 0)
+		rentalIDs := make([]int, 0)
+		lateRentals := make([]entity.LateRental, 0)
+		// check rentals due date and calculate any late fee
+		for _, rental := range rentals {
+			// HACK: use time.Now but only change the time zone (default: time.Local) to time.UTC+0
+			// this allow us to compare with postgres time return with UTC+0 timezone
+			now := time.Now()
+			today := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), time.UTC)
+
+			rentalIDs = append(rentalIDs, rental.ID)
+
+			fmt.Println(today, rental.DueDate, today.Sub(rental.DueDate).Hours(), "check")
+			if today.After(rental.DueDate) {
+				daysLate := int(today.Sub(rental.DueDate).Hours() / 24)
+				if daysLate >= 1 {
+					lateFee := float64(daysLate) * constant.LATE_FEE
+
+					if lateFee > constant.MAX_CAP_FEE {
+						lateFee = constant.MAX_CAP_FEE
+					}
+
+					video := videoIDVideoMap[rental.VideoID]
+					lateRentals = append(lateRentals, entity.LateRental{
+						Video:    video,
+						RentalID: rental.ID,
+						DaysLate: daysLate,
+						DueDate:  rental.DueDate,
+						LateFee:  lateFee,
+					})
+					lateRentalIDs = append(lateRentalIDs, rental.ID)
+
+					totalLateFee += lateFee
+				}
+			}
+		}
+		returnVideosReturn.LateRentals = lateRentals
+
+		// update rental status
+		if err := ru.rr.UpdatesRentalStatus(txCtx, rentalIDs, constant.RENTAL_RETURNED); err != nil {
+			return err
+		}
+		// update (increase) videos stock
+		if err := ru.vr.ReturnMultipleVideos(txCtx, renturnVideosParams.VideoIDs); err != nil {
+			return err
+		}
+		// return if there are no late rentals
+		if len(lateRentalIDs) <= 0 {
+			return nil
+		}
+
+		// if there are late rentals
+		returnVideosReturn.TotalPrice = &totalLateFee
+		// create payment
+		paymentExpiredTime := time.Now().Add(time.Hour * constant.DEFAULT_PAYMENT_EXPIRED_DUE)
+		payment := entity.Payment{
+			UserID:      renturnVideosParams.UserID,
+			TotalPrice:  totalLateFee,
+			ExpiredTime: paymentExpiredTime,
+		}
+		if createPaymentErr := ru.pr.Create(txCtx, &payment); createPaymentErr != nil {
+			return createPaymentErr
+		}
+		returnVideosReturn.LateFeePaymentID = &payment.ID
+		returnVideosReturn.ExpiredTime = &paymentExpiredTime
+
+		// update rental with adding late fee payment id
+		if err := ru.rr.UpdatesAddLatefee(txCtx, lateRentalIDs, payment.ID); err != nil {
+			return err
+		}
+
+		return nil
+	}); err != nil {
+		return returnVideosReturn, err
+	}
+
+	return returnVideosReturn, nil
 }

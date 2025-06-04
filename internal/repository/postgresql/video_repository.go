@@ -43,7 +43,7 @@ func (vr *VideoRepository) Create(ctx context.Context, video *entity.Video) erro
 }
 
 func (vr *VideoRepository) FetchAll(ctx context.Context, params entity.GetVideosParams) (entity.GetVideosReturn, error) {
-	baseQuery := `select id, title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids
+	baseQuery := `select id, title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids, created_at, updated_at
 				from videos where deleted_at is null`
 	totalRowQuery := `select count(id) as total_row from videos where deleted_at is null`
 
@@ -135,6 +135,8 @@ func (vr *VideoRepository) FetchAll(ctx context.Context, params entity.GetVideos
 			&video.TotalStock,
 			&video.AvailableStock,
 			m.SQLScanner(&video.GenreIDs),
+			&video.CreatedAt,
+			&video.UpdatedAt,
 		); err != nil {
 			return entity.GetVideosReturn{}, customerrors.NewError(
 				"failed to fetch video data",
@@ -246,6 +248,46 @@ func (vr *VideoRepository) FetchMultipleVideos(ctx context.Context, videosID []i
 func (vr *VideoRepository) RentMultipleVideos(ctx context.Context, videosID []int) error {
 	query := `update videos 
 				set available_stock	= available_stock - 1
+				where id in (`
+
+	args := make([]any, len(videosID))
+	for i, id := range videosID {
+		query += fmt.Sprintf("$%d,", i+1)
+		args[i] = id
+	}
+	query = query[:len(query)-1]
+	query += ")"
+
+	var conn DBinf = vr.conn
+	tx := ctx.Value(TxKey{TRANSACTION_KEY})
+	if tx != nil {
+		conn = tx.(*sql.Tx)
+	}
+
+	rows, rowsErr := conn.QueryContext(ctx, query, args...)
+	if rowsErr != nil {
+		return customerrors.NewError(
+			"failed to update video available stock data",
+			rowsErr,
+			customerrors.DatabaseExecutionError,
+		)
+	}
+	defer rows.Close()
+
+	if err := rows.Err(); err != nil {
+		return customerrors.NewError(
+			"failed to update video available stock data",
+			err,
+			customerrors.DatabaseExecutionError,
+		)
+	}
+
+	return nil
+}
+
+func (vr *VideoRepository) ReturnMultipleVideos(ctx context.Context, videosID []int) error {
+	query := `update videos 
+				set available_stock	= available_stock + 1
 				where id in (`
 
 	args := make([]any, len(videosID))
