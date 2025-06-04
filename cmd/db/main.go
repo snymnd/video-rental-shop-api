@@ -1,18 +1,25 @@
 package main
 
 import (
+	"flag"
 	"log"
 	dbcommand "vrs-api/db/command"
 )
 
 func main() {
-	if err := dbcommand.RunMigrations(); err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Migrations applied successfully")
+	var isDown bool
+	flag.BoolVar(&isDown, "down", false, "Run migration down")
+	flag.Parse()
 
-	if err := dbcommand.RunSeeder(); err != nil {
+	if err := dbcommand.RunMigrations(isDown); err != nil {
 		log.Fatal(err)
 	}
-	log.Println("Seeds applied successfully")
+	log.Println("migrations applied successfully", isDown)
+
+	if !isDown {
+		if err := dbcommand.RunSeeder(); err != nil {
+			log.Fatal(err)
+		}
+		log.Println("seeds applied successfully")
+	}
 }
