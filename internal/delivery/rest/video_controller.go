@@ -110,10 +110,12 @@ func (vc *VideoController) GetVideos(ctx *gin.Context) {
 			Overview:          entry.Overview,
 			Format:            entry.Format,
 			TotalStock:        entry.TotalStock,
+			RentPrice:         entry.RentPrice,
 			AvailableStock:    entry.AvailableStock,
 			CoverPath:         entry.CoverPath,
 			ProductionCompany: entry.ProductionCompany,
 			GenreIDs:          entry.GenreIDs,
+			CreatedAt:         &entry.CreatedAt,
 		}
 		videos = append(videos, video)
 	}

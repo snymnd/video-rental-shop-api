@@ -15,7 +15,7 @@ type (
 	}
 
 	CreateVideoRes struct {
-		ID                string  `json:"id" `
+		ID                int     `json:"id" `
 		Title             string  `json:"title"`
 		Overview          string  `json:"overview,omitempty"`
 		Format            string  `json:"format"`
@@ -28,7 +28,7 @@ type (
 	}
 
 	VideoRes struct {
-		ID                string     `json:"id" `
+		ID                int        `json:"id" `
 		Title             string     `json:"title"`
 		Overview          string     `json:"overview,omitempty"`
 		Format            string     `json:"format"`

@@ -55,6 +55,10 @@ func (c *RouteConfig) SetupPrivateRoute() {
 		middleware.AuthorizationMiddleware(constant.PERM_CREATE, constant.RSC_RENTALS, c.RBACRepository),
 		c.RentalController.RentVideos,
 	)
+	v1.POST("/rentals/return",
+		middleware.AuthorizationMiddleware(constant.PERM_UPDATE_ALL, constant.RSC_RENTALS, c.RBACRepository),
+		c.RentalController.ReturnVideos,
+	)
 	v1.GET("/private", func(ctx *gin.Context) {
 		ctx.JSON(200, dto.Response{
 			Success: true,
