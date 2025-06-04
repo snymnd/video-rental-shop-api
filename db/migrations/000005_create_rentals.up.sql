@@ -16,6 +16,7 @@ CREATE TABLE  IF NOT EXISTS rentals (
   video_id BIGINT NOT NULL,
   rental_payment_id BIGINT,
   latefee_payment_id BIGINT,
+  user_id UUID NOT NULL,
   due_date TIMESTAMP NOT NULL,
   return_date TIMESTAMP,
   status rental_status NOT NULL DEFAULT 'pending',
@@ -23,6 +24,7 @@ CREATE TABLE  IF NOT EXISTS rentals (
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
   deleted_at TIMESTAMP,
   FOREIGN KEY (video_id) REFERENCES videos(id),
+  FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (rental_payment_id) REFERENCES payments(id),
   FOREIGN KEY (latefee_payment_id) REFERENCES payments(id)
 );
