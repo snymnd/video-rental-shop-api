@@ -53,7 +53,7 @@ func (rr *RentalRepository) Creates(ctx context.Context, rentals entity.Multiple
 }
 
 func (rr *RentalRepository) UpdatesAddLatefee(ctx context.Context, rentalIDs []int, lateFeePaymentId int) error {
-	query := `update rentals set latefee_payment_id = $1
+	query := `update rentals set latefee_payment_id = $1, updated_at = NOW()
 				where id in (`
 
 	args := make([]any, len(rentalIDs)+1)
@@ -157,7 +157,7 @@ func (rr *RentalRepository) FetchMultipleRentals(ctx context.Context, videosID [
 }
 
 func (rr *RentalRepository) UpdatesRentalStatus(ctx context.Context, rentalIDs []int, status constant.RentalStatus) error {
-	query := `update rentals set status = $1 
+	query := `update rentals set status = $1, updated_at = NOW()
 				where id in (`
 
 	args := make([]any, len(rentalIDs)+1)
@@ -181,6 +181,31 @@ func (rr *RentalRepository) UpdatesRentalStatus(ctx context.Context, rentalIDs [
 	if rowsErr != nil {
 		return customerrors.NewError(
 			"failed to update rentals status",
+			rowsErr,
+			customerrors.DatabaseExecutionError,
+		)
+	}
+	defer rows.Close()
+
+	return nil
+}
+
+func (rr *RentalRepository) UpdatesRentalStatusByPaymentID(ctx context.Context, paymentID int, status constant.RentalStatus) error {
+	query := `update rentals set status = $1, updated_at = NOW()
+				where rental_payment_id = $2`
+
+	args := []any{status, paymentID}
+
+	var conn DBinf = rr.conn
+	tx := ctx.Value(TxKey{TRANSACTION_KEY})
+	if tx != nil {
+		conn = tx.(*sql.Tx)
+	}
+
+	rows, rowsErr := conn.QueryContext(ctx, query, args...)
+	if rowsErr != nil {
+		return customerrors.NewError(
+			"failed to update rentals status with specified id",
 			rowsErr,
 			customerrors.DatabaseExecutionError,
 		)

@@ -24,7 +24,7 @@ type (
 		RentMultipleVideos(ctx context.Context, videosID []int) error
 		ReturnMultipleVideos(ctx context.Context, videosID []int) error
 	}
-	PaymentRepository interface {
+	RentalPaymentRepository interface {
 		Create(ctx context.Context, payment *entity.Payment) error
 	}
 	RentTxRepository interface {
@@ -35,11 +35,11 @@ type (
 type RentalUsecase struct {
 	rr  RentalRepository
 	vr  RentalVideoRepository
-	pr  PaymentRepository
+	pr  RentalPaymentRepository
 	txr RentTxRepository
 }
 
-func NewRentalUsecase(rr RentalRepository, vr RentalVideoRepository, pr PaymentRepository, tx RentTxRepository) *RentalUsecase {
+func NewRentalUsecase(rr RentalRepository, vr RentalVideoRepository, pr RentalPaymentRepository, tx RentTxRepository) *RentalUsecase {
 	return &RentalUsecase{rr, vr, pr, tx}
 }
 
@@ -125,6 +125,27 @@ func (ru *RentalUsecase) ReturnVideos(ctx context.Context, renturnVideosParams e
 				customerrors.ItemNotExist,
 			)
 		}
+		videoIDRentalMap := make(map[int]bool)
+		for _, rental := range rentals {
+			videoIDRentalMap[rental.VideoID] = true
+		}
+		notFoundVideoRentalErr := []dto.DetailsError{}
+		for _, videoID := range renturnVideosParams.VideoIDs {
+			if _, isExist := videoIDRentalMap[videoID]; !isExist {
+				notFoundVideoRentalErr = append(notFoundVideoRentalErr, dto.DetailsError{
+					Title:   fmt.Sprintf("%d", videoID),
+					Message: fmt.Sprintf("no rented rental found for this user with video ID: %d", videoID),
+				})
+			}
+		}
+		if len(notFoundVideoRentalErr) > 0 {
+			return customerrors.NewError(
+				"rental not found for some videos",
+				fmt.Errorf("rental not found for some videos"),
+				customerrors.ItemNotExist,
+				notFoundVideoRentalErr,
+			)
+		}
 
 		videos, fetchVideoErr := ru.vr.FetchMultipleVideos(txCtx, renturnVideosParams.VideoIDs)
 		if fetchVideoErr != nil {
@@ -139,16 +160,16 @@ func (ru *RentalUsecase) ReturnVideos(ctx context.Context, renturnVideosParams e
 		lateRentalIDs := make([]int, 0)
 		rentalIDs := make([]int, 0)
 		lateRentals := make([]entity.LateRental, 0)
+
 		// check rentals due date and calculate any late fee
 		for _, rental := range rentals {
-			// HACK: use time.Now but only change the time zone (default: time.Local) to time.UTC+0
+			// HACK: use time.Now but change the time zone (default: time.Local) to time.UTC+0
 			// this allow us to compare with postgres time return with UTC+0 timezone
 			now := time.Now()
 			today := time.Date(now.Year(), now.Month(), now.Day(), now.Hour(), now.Minute(), now.Second(), now.Nanosecond(), time.UTC)
 
 			rentalIDs = append(rentalIDs, rental.ID)
 
-			fmt.Println(today, rental.DueDate, today.Sub(rental.DueDate).Hours(), "check")
 			if today.After(rental.DueDate) {
 				daysLate := int(today.Sub(rental.DueDate).Hours() / 24)
 				if daysLate >= 1 {
@@ -189,7 +210,7 @@ func (ru *RentalUsecase) ReturnVideos(ctx context.Context, renturnVideosParams e
 
 		// if there are late rentals
 		returnVideosReturn.TotalPrice = &totalLateFee
-		// create payment
+		// create payment for latefee
 		paymentExpiredTime := time.Now().Add(time.Hour * constant.DEFAULT_PAYMENT_EXPIRED_DUE)
 		payment := entity.Payment{
 			UserID:      renturnVideosParams.UserID,

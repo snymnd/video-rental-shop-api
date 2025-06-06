@@ -10,9 +10,17 @@ type (
 		ID          int
 		UserID      string
 		TotalPrice  float64
-		Method      *string
+		Method      *constant.PaymentMethod
 		ExpiredTime time.Time
 		Status      constant.PaymentStatus
 		CreatedAt   time.Time
+	}
+
+	UpdatePaymentParams struct {
+		ID          int
+		TotalPrice  *float64
+		Method      *constant.PaymentMethod
+		ExpiredTime *time.Time
+		Status      *constant.PaymentStatus
 	}
 )

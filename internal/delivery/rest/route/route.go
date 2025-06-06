@@ -13,12 +13,13 @@ import (
 )
 
 type RouteConfig struct {
-	App              *gin.Engine
-	UserController   *rest.UserController
-	VideoController  *rest.VideoController
-	RentalController *rest.RentalController
-	RBACRepository   *postgresql.RBACRepository
-	TokenManager     *util.TokenManager
+	App               *gin.Engine
+	UserController    *rest.UserController
+	VideoController   *rest.VideoController
+	RentalController  *rest.RentalController
+	RBACRepository    *postgresql.RBACRepository
+	TokenManager      *util.TokenManager
+	PaymentController *rest.PaymentController
 }
 
 func (c *RouteConfig) Setup() {
@@ -59,6 +60,13 @@ func (c *RouteConfig) SetupPrivateRoute() {
 		middleware.AuthorizationMiddleware(constant.PERM_UPDATE_ALL, constant.RSC_RENTALS, c.RBACRepository),
 		c.RentalController.ReturnVideos,
 	)
+	// NOTE: This endpoint/operation is intended to be called after payment has been verified by a third-party (i.e. payment-gateway, admin (for cash payment method).
+	v1.GET("/payments/rentals/:method/:id",
+		middleware.AuthorizationMiddleware(constant.PERM_UPDATE_ALL, constant.RSC_PAYMENTS, c.RBACRepository),
+		c.PaymentController.PayRentals,
+	)
+
+	// endpoint to check rbac
 	v1.GET("/private", func(ctx *gin.Context) {
 		ctx.JSON(200, dto.Response{
 			Success: true,
