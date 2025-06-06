@@ -33,19 +33,22 @@ func Bootstrap(config *BootstrapConfig) {
 	userUseCase := usecase.NewUsersUsecase(userRepository, config.TokenManager)
 	videoUsecase := usecase.NewVideoUsecase(videoRepository)
 	rentalUsecase := usecase.NewRentalUsecase(rentalRepository, videoRepository, paymentRepository, txRepository)
+	paymentUsecase := usecase.NewPaymentUsecase(paymentRepository, rentalRepository, txRepository)
 
 	// setup controller
 	userController := rest.NewUserController(userUseCase)
 	videoController := rest.NewVideoController(videoUsecase)
 	rentalController := rest.NewRentalController(rentalUsecase)
+	paymentController := rest.NewPaymentController(paymentUsecase)
 
 	routeConfig := route.RouteConfig{
-		App:              config.App,
-		TokenManager:     config.TokenManager,
-		UserController:   userController,
-		RBACRepository:   rbacRepository,
-		VideoController:  videoController,
-		RentalController: rentalController,
+		App:               config.App,
+		TokenManager:      config.TokenManager,
+		UserController:    userController,
+		RBACRepository:    rbacRepository,
+		VideoController:   videoController,
+		RentalController:  rentalController,
+		PaymentController: paymentController,
 	}
 	routeConfig.Setup()
 }
