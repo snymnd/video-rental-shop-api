@@ -13,13 +13,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type PaymentUsecase interface {
-	PayRentals(ctx context.Context, paymentID int, paymentMethod constant.PaymentMethod) error
-}
+type (
+	PaymentUsecase interface {
+		PayRentals(ctx context.Context, paymentID int, paymentMethod constant.PaymentMethod) error
+	}
 
-type PaymentController struct {
-	puc PaymentUsecase
-}
+	PaymentController struct {
+		puc PaymentUsecase
+	}
+)
 
 func NewPaymentController(puc PaymentUsecase) *PaymentController {
 	return &PaymentController{puc}

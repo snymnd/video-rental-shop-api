@@ -22,18 +22,18 @@ type (
 		WithTx(ctx context.Context, tFunc func(ctx context.Context) error) error
 	}
 
-	PaymentUsecase struct {
+	paymentUsecase struct {
 		pr  PaymentRepository
 		rr  PaymentRentalRepository
 		txr PaymentTxRepository
 	}
 )
 
-func NewPaymentUsecase(pr PaymentRepository, rr PaymentRentalRepository, txr PaymentTxRepository) *PaymentUsecase {
-	return &PaymentUsecase{pr, rr, txr}
+func NewPaymentUsecase(pr PaymentRepository, rr PaymentRentalRepository, txr PaymentTxRepository) *paymentUsecase {
+	return &paymentUsecase{pr, rr, txr}
 }
 
-func (puc PaymentUsecase) PayRentals(ctx context.Context, paymentID int, paymentMethod constant.PaymentMethod) error {
+func (puc paymentUsecase) PayRentals(ctx context.Context, paymentID int, paymentMethod constant.PaymentMethod) error {
 	if err := puc.txr.WithTx(ctx, func(txCtx context.Context) error {
 		// get payment
 		payment, getPaymentErr := puc.pr.GetPayment(txCtx, paymentID)

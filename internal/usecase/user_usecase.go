@@ -10,22 +10,22 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UsersRepository interface {
-	Create(ctx context.Context, user *entity.Users) error
-	CheckIsEmailExist(ctx context.Context, email string) (bool, error)
-	GetUserByEmail(ctx context.Context, email string) (*entity.Users, error)
-}
+type (
+	UsersRepository interface {
+		Create(ctx context.Context, user *entity.Users) error
+		CheckIsEmailExist(ctx context.Context, email string) (bool, error)
+		GetUserByEmail(ctx context.Context, email string) (*entity.Users, error)
+	}
+	UsersUsecase struct {
+		ur    UsersRepository
+		token tokenManager
+	}
+	tokenManager interface {
+		Generate(userID string, role int) (string, error)
+	}
+)
 
-type UsersUsecase struct {
-	ur    UsersRepository
-	token TokenManager
-}
-
-type TokenManager interface {
-	Generate(userID string, role int) (string, error)
-}
-
-func NewUsersUsecase(ur UsersRepository, token TokenManager) *UsersUsecase {
+func NewUsersUsecase(ur UsersRepository, token tokenManager) *UsersUsecase {
 	return &UsersUsecase{
 		ur:    ur,
 		token: token,

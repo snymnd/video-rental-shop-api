@@ -11,15 +11,15 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type VideoRepository struct {
+type videoRepository struct {
 	conn *sql.DB
 }
 
-func NewVideoRepository(conn *sql.DB) *VideoRepository {
-	return &VideoRepository{conn}
+func NewVideoRepository(conn *sql.DB) *videoRepository {
+	return &videoRepository{conn}
 }
 
-func (vr *VideoRepository) Create(ctx context.Context, video *entity.Video) error {
+func (vr *videoRepository) Create(ctx context.Context, video *entity.Video) error {
 	query := `insert into videos(title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids) 
 				values 
 				($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -42,7 +42,7 @@ func (vr *VideoRepository) Create(ctx context.Context, video *entity.Video) erro
 	return nil
 }
 
-func (vr *VideoRepository) FetchAll(ctx context.Context, params entity.GetVideosParams) (entity.GetVideosReturn, error) {
+func (vr *videoRepository) FetchAll(ctx context.Context, params entity.GetVideosParams) (entity.GetVideosReturn, error) {
 	baseQuery := `select id, title, overview, format, rent_price, production_company, cover_path, total_stock, available_stock, genre_ids, created_at, updated_at
 				from videos where deleted_at is null`
 	totalRowQuery := `select count(id) as total_row from videos where deleted_at is null`
@@ -180,7 +180,7 @@ func (vr *VideoRepository) FetchAll(ctx context.Context, params entity.GetVideos
 	return videosReturn, nil
 }
 
-func (vr *VideoRepository) FetchMultipleVideos(ctx context.Context, videosID []int) (videos entity.Videos, err error) {
+func (vr *videoRepository) FetchMultipleVideos(ctx context.Context, videosID []int) (videos entity.Videos, err error) {
 	query := `select id, title, overview, format, production_company, rent_price, cover_path, total_stock, available_stock, genre_ids
 				from videos
 				where id in (`
@@ -245,7 +245,7 @@ func (vr *VideoRepository) FetchMultipleVideos(ctx context.Context, videosID []i
 	return videos, nil
 }
 
-func (vr *VideoRepository) RentMultipleVideos(ctx context.Context, videosID []int) error {
+func (vr *videoRepository) RentMultipleVideos(ctx context.Context, videosID []int) error {
 	query := `update videos 
 				set available_stock	= available_stock - 1, updated_at = NOW()
 				where id in (`
@@ -285,7 +285,7 @@ func (vr *VideoRepository) RentMultipleVideos(ctx context.Context, videosID []in
 	return nil
 }
 
-func (vr *VideoRepository) ReturnMultipleVideos(ctx context.Context, videosID []int) error {
+func (vr *videoRepository) ReturnMultipleVideos(ctx context.Context, videosID []int) error {
 	query := `update videos 
 				set available_stock	= available_stock + 1, updated_at = NOW()
 				where id in (`

@@ -9,15 +9,15 @@ import (
 	"vrs-api/internal/entity"
 )
 
-type RentalRepository struct {
+type rentalRepository struct {
 	conn *sql.DB
 }
 
-func NewRentalRepository(conn *sql.DB) *RentalRepository {
-	return &RentalRepository{conn}
+func NewRentalRepository(conn *sql.DB) *rentalRepository {
+	return &rentalRepository{conn}
 }
 
-func (rr *RentalRepository) Creates(ctx context.Context, rentals entity.MultipleRentParams) error {
+func (rr *rentalRepository) Creates(ctx context.Context, rentals entity.MultipleRentParams) error {
 	query := `insert into rentals (video_id, rental_payment_id, due_date, user_id)
 				values `
 
@@ -52,7 +52,7 @@ func (rr *RentalRepository) Creates(ctx context.Context, rentals entity.Multiple
 	return nil
 }
 
-func (rr *RentalRepository) UpdatesAddLatefee(ctx context.Context, rentalIDs []int, lateFeePaymentId int) error {
+func (rr *rentalRepository) UpdatesAddLatefee(ctx context.Context, rentalIDs []int, lateFeePaymentId int) error {
 	query := `update rentals set latefee_payment_id = $1, updated_at = NOW()
 				where id in (`
 
@@ -85,7 +85,7 @@ func (rr *RentalRepository) UpdatesAddLatefee(ctx context.Context, rentalIDs []i
 	return nil
 }
 
-func (rr *RentalRepository) FetchMultipleRentals(ctx context.Context, videosID []int, userID string, status constant.RentalStatus) (rentals entity.Rentals, err error) {
+func (rr *rentalRepository) FetchMultipleRentals(ctx context.Context, videosID []int, userID string, status constant.RentalStatus) (rentals entity.Rentals, err error) {
 	query := `select id, video_id, user_id, rental_payment_id, latefee_payment_id, status, due_date, created_at, updated_at
 				from rentals
 				where user_id = $1 and video_id in (`
@@ -156,7 +156,7 @@ func (rr *RentalRepository) FetchMultipleRentals(ctx context.Context, videosID [
 	return rentals, nil
 }
 
-func (rr *RentalRepository) UpdatesRentalStatus(ctx context.Context, rentalIDs []int, status constant.RentalStatus) error {
+func (rr *rentalRepository) UpdatesRentalStatus(ctx context.Context, rentalIDs []int, status constant.RentalStatus) error {
 	query := `update rentals set status = $1, updated_at = NOW()
 				where id in (`
 
@@ -190,7 +190,7 @@ func (rr *RentalRepository) UpdatesRentalStatus(ctx context.Context, rentalIDs [
 	return nil
 }
 
-func (rr *RentalRepository) UpdatesRentalStatusByPaymentID(ctx context.Context, paymentID int, status constant.RentalStatus) error {
+func (rr *rentalRepository) UpdatesRentalStatusByPaymentID(ctx context.Context, paymentID int, status constant.RentalStatus) error {
 	query := `update rentals set status = $1, updated_at = NOW()
 				where rental_payment_id = $2`
 

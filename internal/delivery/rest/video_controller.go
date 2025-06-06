@@ -10,14 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type VideoUsecase interface {
-	CreateVideo(ctx context.Context, video *entity.Video) error
-	GetVideos(ctx context.Context, params entity.GetVideosParams) (entity.GetVideosReturn, error)
-}
+type (
+	VideoUsecase interface {
+		CreateVideo(ctx context.Context, video *entity.Video) error
+		GetVideos(ctx context.Context, params entity.GetVideosParams) (entity.GetVideosReturn, error)
+	}
 
-type VideoController struct {
-	vuc VideoUsecase
-}
+	VideoController struct {
+		vuc VideoUsecase
+	}
+)
 
 func NewVideoController(vuc VideoUsecase) *VideoController {
 	return &VideoController{vuc}

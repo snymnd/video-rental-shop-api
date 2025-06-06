@@ -8,15 +8,15 @@ import (
 	"vrs-api/internal/entity"
 )
 
-type UserRepository struct {
+type userRepository struct {
 	conn *sql.DB
 }
 
-func NewUserRepository(conn *sql.DB) *UserRepository {
-	return &UserRepository{conn}
+func NewUserRepository(conn *sql.DB) *userRepository {
+	return &userRepository{conn}
 }
 
-func (ur *UserRepository) Create(ctx context.Context, user *entity.Users) error {
+func (ur *userRepository) Create(ctx context.Context, user *entity.Users) error {
 	query := `insert into users (name, email, password) 
 				values ($1, $2, $3) returning id, role, created_at, updated_at;`
 
@@ -37,7 +37,7 @@ func (ur *UserRepository) Create(ctx context.Context, user *entity.Users) error 
 	return nil
 }
 
-func (br *UserRepository) CheckIsEmailExist(ctx context.Context, email string) (bool, error) {
+func (br *userRepository) CheckIsEmailExist(ctx context.Context, email string) (bool, error) {
 	query := `select email 
 				from users
 				where email = $1`
@@ -57,7 +57,7 @@ func (br *UserRepository) CheckIsEmailExist(ctx context.Context, email string) (
 	return true, nil
 }
 
-func (br *UserRepository) GetUserByEmail(ctx context.Context, email string) (*entity.Users, error) {
+func (br *userRepository) GetUserByEmail(ctx context.Context, email string) (*entity.Users, error) {
 	query := `select id, name, email, password, role, created_at, updated_at 
 				from users
 				where LOWER(email) = $1`
@@ -86,7 +86,7 @@ func (br *UserRepository) GetUserByEmail(ctx context.Context, email string) (*en
 	return &user, nil
 }
 
-func (ur *UserRepository) CheckIsUserExist(ctx context.Context, id string) error {
+func (ur *userRepository) CheckIsUserExist(ctx context.Context, id string) error {
 	query := `select id 
 				from users
 				where id = $1`
