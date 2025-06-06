@@ -247,7 +247,7 @@ func (vr *VideoRepository) FetchMultipleVideos(ctx context.Context, videosID []i
 
 func (vr *VideoRepository) RentMultipleVideos(ctx context.Context, videosID []int) error {
 	query := `update videos 
-				set available_stock	= available_stock - 1
+				set available_stock	= available_stock - 1, updated_at = NOW()
 				where id in (`
 
 	args := make([]any, len(videosID))
@@ -287,7 +287,7 @@ func (vr *VideoRepository) RentMultipleVideos(ctx context.Context, videosID []in
 
 func (vr *VideoRepository) ReturnMultipleVideos(ctx context.Context, videosID []int) error {
 	query := `update videos 
-				set available_stock	= available_stock + 1
+				set available_stock	= available_stock + 1, updated_at = NOW()
 				where id in (`
 
 	args := make([]any, len(videosID))
