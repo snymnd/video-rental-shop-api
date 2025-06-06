@@ -53,4 +53,5 @@ VALUES
 (2, 7, 3), -- admin can delete all rentals
 
 (2, 3, 4), -- admin can read all payments
+(2, 5, 4), -- admin can update all payments
 (2, 7, 4); -- admin can delete all payments
