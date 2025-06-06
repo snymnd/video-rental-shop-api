@@ -8,15 +8,15 @@ import (
 	"vrs-api/internal/entity"
 )
 
-type PaymentRepository struct {
+type paymentRepository struct {
 	conn *sql.DB
 }
 
-func NewPaymentRepository(conn *sql.DB) *PaymentRepository {
-	return &PaymentRepository{conn}
+func NewPaymentRepository(conn *sql.DB) *paymentRepository {
+	return &paymentRepository{conn}
 }
 
-func (pr *PaymentRepository) Create(ctx context.Context, payment *entity.Payment) error {
+func (pr *paymentRepository) Create(ctx context.Context, payment *entity.Payment) error {
 	query := `insert into payments (user_id, total_price, expired_time)
 				values ($1, $2, $3)
 				returning id, status, created_at`
@@ -44,7 +44,7 @@ func (pr *PaymentRepository) Create(ctx context.Context, payment *entity.Payment
 	return nil
 }
 
-func (pr *PaymentRepository) GetPayment(ctx context.Context, paymentID int) (payment entity.Payment, err error) {
+func (pr *paymentRepository) GetPayment(ctx context.Context, paymentID int) (payment entity.Payment, err error) {
 	query := `select id, user_id, total_price, method, expired_time, status, created_at
 				from payments
 				where id = $1`
@@ -81,7 +81,7 @@ func (pr *PaymentRepository) GetPayment(ctx context.Context, paymentID int) (pay
 	return payment, nil
 }
 
-func (pr *PaymentRepository) UpdatePayment(ctx context.Context, updatePaymentParams entity.UpdatePaymentParams) error {
+func (pr *paymentRepository) UpdatePayment(ctx context.Context, updatePaymentParams entity.UpdatePaymentParams) error {
 	query := `update payments set 
 				status = coalesce($2, status),
 				method = coalesce($3, method),

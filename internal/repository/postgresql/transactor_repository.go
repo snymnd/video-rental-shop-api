@@ -7,12 +7,12 @@ import (
 	"vrs-api/internal/customerrors"
 )
 
-type Transactor struct {
+type transactor struct {
 	conn *sql.DB
 }
 
-func NewTxRepository(conn *sql.DB) *Transactor {
-	return &Transactor{conn}
+func NewTxRepository(conn *sql.DB) *transactor {
+	return &transactor{conn}
 }
 
 type TxKey struct {
@@ -27,7 +27,7 @@ type DBinf interface {
 
 const TRANSACTION_KEY = "txkey"
 
-func (wt *Transactor) WithTx(ctx context.Context, tFunc func(ctx context.Context) error) error {
+func (wt *transactor) WithTx(ctx context.Context, tFunc func(ctx context.Context) error) error {
 	// begin transaction
 	tx, err := wt.conn.Begin()
 	if err != nil {

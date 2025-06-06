@@ -9,14 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type UserUsecase interface {
-	RegisterUser(ctx context.Context, user *entity.Users) error
-	LoginUser(ctx context.Context, user *entity.Login) error
-}
+type (
+	UserUsecase interface {
+		RegisterUser(ctx context.Context, user *entity.Users) error
+		LoginUser(ctx context.Context, user *entity.Login) error
+	}
 
-type UserController struct {
-	uuc UserUsecase
-}
+	UserController struct {
+		uuc UserUsecase
+	}
+)
 
 func NewUserController(uuc UserUsecase) *UserController {
 	return &UserController{uuc}

@@ -13,14 +13,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type RentalUsecase interface {
-	RentVideos(ctx context.Context, rentVideos entity.RentVideoParam) (entity.RentVideoReturn, error)
-	ReturnVideos(ctx context.Context, rentVideos entity.ReturnVideoParam) (entity.ReturnVideoReturn, error)
-}
+type (
+	RentalUsecase interface {
+		RentVideos(ctx context.Context, rentVideos entity.RentVideoParam) (entity.RentVideoReturn, error)
+		ReturnVideos(ctx context.Context, rentVideos entity.ReturnVideoParam) (entity.ReturnVideoReturn, error)
+	}
 
-type RentalController struct {
-	ruc RentalUsecase
-}
+	RentalController struct {
+		ruc RentalUsecase
+	}
+)
 
 func NewRentalController(ruc RentalUsecase) *RentalController {
 	return &RentalController{ruc}

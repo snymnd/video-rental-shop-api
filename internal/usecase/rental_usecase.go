@@ -30,20 +30,19 @@ type (
 	RentTxRepository interface {
 		WithTx(ctx context.Context, tFunc func(ctx context.Context) error) error
 	}
+	rentalUsecase struct {
+		rr  RentalRepository
+		vr  RentalVideoRepository
+		pr  RentalPaymentRepository
+		txr RentTxRepository
+	}
 )
 
-type RentalUsecase struct {
-	rr  RentalRepository
-	vr  RentalVideoRepository
-	pr  RentalPaymentRepository
-	txr RentTxRepository
+func NewRentalUsecase(rr RentalRepository, vr RentalVideoRepository, pr RentalPaymentRepository, tx RentTxRepository) *rentalUsecase {
+	return &rentalUsecase{rr, vr, pr, tx}
 }
 
-func NewRentalUsecase(rr RentalRepository, vr RentalVideoRepository, pr RentalPaymentRepository, tx RentTxRepository) *RentalUsecase {
-	return &RentalUsecase{rr, vr, pr, tx}
-}
-
-func (ru *RentalUsecase) RentVideos(ctx context.Context, rentVideosParams entity.RentVideoParam) (rentReturn entity.RentVideoReturn, err error) {
+func (ru *rentalUsecase) RentVideos(ctx context.Context, rentVideosParams entity.RentVideoParam) (rentReturn entity.RentVideoReturn, err error) {
 	if err = ru.txr.WithTx(ctx, func(txCtx context.Context) error {
 		// fetch needed videos
 		videos, fetchVideoErr := ru.vr.FetchMultipleVideos(txCtx, rentVideosParams.VideosID)
@@ -111,7 +110,7 @@ func (ru *RentalUsecase) RentVideos(ctx context.Context, rentVideosParams entity
 	return rentReturn, nil
 }
 
-func (ru *RentalUsecase) ReturnVideos(ctx context.Context, renturnVideosParams entity.ReturnVideoParam) (returnVideosReturn entity.ReturnVideoReturn, err error) {
+func (ru *rentalUsecase) ReturnVideos(ctx context.Context, renturnVideosParams entity.ReturnVideoParam) (returnVideosReturn entity.ReturnVideoReturn, err error) {
 	if err = ru.txr.WithTx(ctx, func(txCtx context.Context) error {
 		// fetch rentals based on video id and user id
 		rentals, fetchVideoErr := ru.rr.FetchMultipleRentals(txCtx, renturnVideosParams.VideoIDs, renturnVideosParams.UserID, constant.RENTAL_RENTED)
