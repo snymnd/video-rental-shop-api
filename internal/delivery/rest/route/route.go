@@ -24,13 +24,12 @@ type RouteConfig struct {
 
 func (c *RouteConfig) Setup() {
 	c.App.Use(middleware.ErrorMiddleware())
-
 	c.SetupPublicRoute()
 	c.SetupPrivateRoute()
 }
 
 func (c *RouteConfig) SetupPublicRoute() {
-	v1 := c.App.Group("/v1")
+	v1 := c.App.Group("/api/v1")
 	v1.GET("/welcome", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusAccepted, dto.Response{
 			Success: true,
@@ -42,7 +41,7 @@ func (c *RouteConfig) SetupPublicRoute() {
 }
 
 func (c *RouteConfig) SetupPrivateRoute() {
-	v1 := c.App.Group("/v1")
+	v1 := c.App.Group("/api/v1")
 	v1.Use(middleware.AuthenticateMiddleware(c.TokenManager))
 	v1.POST("/videos",
 		middleware.AuthorizationMiddleware(constant.PERM_CREATE, constant.RSC_VIDEOS, c.RBACRepository),
