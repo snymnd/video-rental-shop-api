@@ -32,10 +32,11 @@ func Bootstrap(config *BootstrapConfig) {
 	paymentRepository := postgresql.NewPaymentRepository(config.DB)
 	txRepository := postgresql.NewTxRepository(config.DB)
 	rbacCacheRepository := redisRepo.NewRBACCacheRepository(config.Cache)
+	videoCacheRepository := redisRepo.NewVideoCacheRepository(config.Cache)
 
 	// setup use cases
 	userUseCase := usecase.NewUsersUsecase(userRepository, config.TokenManager)
-	videoUsecase := usecase.NewVideoUsecase(videoRepository)
+	videoUsecase := usecase.NewVideoUsecase(videoRepository, videoCacheRepository)
 	rentalUsecase := usecase.NewRentalUsecase(rentalRepository, videoRepository, paymentRepository, txRepository)
 	paymentUsecase := usecase.NewPaymentUsecase(paymentRepository, rentalRepository, txRepository)
 

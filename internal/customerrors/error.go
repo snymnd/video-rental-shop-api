@@ -73,4 +73,5 @@ var (
 		errors.New("user id cannot be found on auth payload subject"),
 		CommonErr,
 	)
+	ErrCacheKeyNotFound = errors.New("cache key is not found")
 )
