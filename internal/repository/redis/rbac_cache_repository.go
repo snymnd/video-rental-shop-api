@@ -17,15 +17,14 @@ func NewRBACCacheRepository(redisClient *redis.Client) *RBACCacheRepository {
 }
 
 func (rbaccr *RBACCacheRepository) CheckRoleAccess(ctx context.Context, role, permission, resource int) (*bool, error) {
-	keyCache := rbaccr.getCacheRepositoryKey(fmt.Sprintf("%d:%d:%d", role, permission, resource))
-	rbac := rbaccr.redisClient.Get(ctx, keyCache)
+	cacheKey := rbaccr.getRBACCacheRepositoryKey(fmt.Sprintf("%d:%d:%d", role, permission, resource))
+	rbac := rbaccr.redisClient.Get(ctx, cacheKey)
 	if rbac == nil {
-		err := fmt.Errorf("cache key %s is not found", keyCache)
+		err := fmt.Errorf("cache key %s is not found", cacheKey)
 		return nil, err
 	}
 	hasAccess, err := rbac.Bool()
 	if err != nil {
-		fmt.Println("error =>", err)
 		return nil, err
 	}
 
@@ -33,16 +32,16 @@ func (rbaccr *RBACCacheRepository) CheckRoleAccess(ctx context.Context, role, pe
 }
 
 func (rbaccr *RBACCacheRepository) SetCheckRoleAccess(ctx context.Context, role, permission, resource, duration int, value bool) error {
-	keyCache := rbaccr.getCacheRepositoryKey(fmt.Sprintf("%d:%d:%d", role, permission, resource))
-	if err := rbaccr.redisClient.Set(ctx, keyCache, value, time.Second*time.Duration(duration)).Err(); err != nil {
+	cacheKey := rbaccr.getRBACCacheRepositoryKey(fmt.Sprintf("%d:%d:%d", role, permission, resource))
+	if err := rbaccr.redisClient.Set(ctx, cacheKey, value, time.Second*time.Duration(duration)).Err(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-const basePrefix = "rbac"
+const rbacCacheKeyPrefix = "rbac"
 
-func (rbaccr *RBACCacheRepository) getCacheRepositoryKey(key string) string {
-	return fmt.Sprintf("%s-%s", basePrefix, key)
+func (rbaccr *RBACCacheRepository) getRBACCacheRepositoryKey(key string) string {
+	return fmt.Sprintf("%s-%s", rbacCacheKeyPrefix, key)
 }

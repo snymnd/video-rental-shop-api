@@ -50,7 +50,6 @@ func AuthorizationMiddleware(permission, resource int, rbacr RBACRepository, rba
 		)
 		if cacheHasAccess != nil {
 			log.Printf("use rbac data from redis cache, rbac-%d:%d:%d => %v", role, permission, resource, *cacheHasAccess)
-			ctx.Header(constant.CACHE_STATUS_KEY, constant.CACHE_STATUS_HIT)
 			if !*cacheHasAccess {
 				ctx.Error(unauthorizedErr)
 				ctx.Abort()
@@ -86,7 +85,6 @@ func AuthorizationMiddleware(permission, resource int, rbacr RBACRepository, rba
 			log.Printf("failed to set rbac key rbac-%d:%d:%d, error: %s\n", role, permission, resource, err.Error())
 		}
 
-		ctx.Header(constant.CACHE_STATUS_KEY, constant.CACHE_STATUS_MISS)
 		ctx.Next()
 	}
 }
