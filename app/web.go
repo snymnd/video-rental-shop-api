@@ -15,6 +15,7 @@ import (
 func Run() {
 	viperConfig := config.NewViper()
 	dbConn := config.NewDbConnection(viperConfig)
+	cacheConn := config.NewRedisClient(viperConfig)
 	tokenManager := util.NewTokenManager(viperConfig)
 	defer config.CloseDB(dbConn)
 	app := config.NewGin()
@@ -22,6 +23,7 @@ func Run() {
 	config.Bootstrap(&config.BootstrapConfig{
 		DB:           dbConn,
 		App:          app,
+		Cache:        cacheConn,
 		TokenManager: tokenManager,
 		Config:       viperConfig,
 	})

@@ -14,7 +14,7 @@ type RBACRepository struct {
 func NewRBACRepository(conn *sql.DB) *RBACRepository {
 	return &RBACRepository{conn}
 }
-func (rr *RBACRepository) HasAccess(ctx context.Context, role int, permission int, resource int) (bool, error) {
+func (rr *RBACRepository) CheckRoleAccess(ctx context.Context, role int, permission int, resource int) (bool, error) {
 	query := `select id 
 				from rbac
 				where role_id = $1
