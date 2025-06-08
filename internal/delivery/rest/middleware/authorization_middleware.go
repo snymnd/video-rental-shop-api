@@ -3,6 +3,8 @@ package middleware
 import (
 	"context"
 	"errors"
+	"fmt"
+	"log"
 	"vrs-api/internal/constant"
 	"vrs-api/internal/customerrors"
 	util "vrs-api/internal/util/jwt"
@@ -10,11 +12,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type RBACRepository interface {
-	HasAccess(ctx context.Context, role int, permission int, resource int) (bool, error)
-}
+type (
+	RBACRepository interface {
+		CheckRoleAccess(ctx context.Context, role, permission, resource int) (bool, error)
+	}
+	RBACCacheRepository interface {
+		CheckRoleAccess(ctx context.Context, role, permission, resource int) (*bool, error)
+		SetCheckRoleAccess(ctx context.Context, role, permission, resource, duration int, value bool) error
+	}
+)
 
-func AuthorizationMiddleware(permission int, resource int, rbacr RBACRepository) gin.HandlerFunc {
+func AuthorizationMiddleware(permission, resource int, rbacr RBACRepository, rbacCache RBACCacheRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// get token payload and user id from token subject claims
 		authPayloadCtx := ctx.Value(constant.CTX_AUTH_PAYLOAD_KEY)
@@ -31,28 +39,54 @@ func AuthorizationMiddleware(permission int, resource int, rbacr RBACRepository)
 		authPayload := authPayloadCtx.(*util.JWTCustomClaims)
 		role := authPayload.Role
 
-		ok, hasAccessErr := rbacr.HasAccess(ctx, role, permission, resource)
-		if hasAccessErr != nil {
-			ctx.Error(
-				customerrors.NewError(
-					"cannot identified access",
-					errors.New("cannot check if role has access"),
-					customerrors.Unauthorized,
-				))
-			ctx.Abort()
+		cacheHasAccess, err := rbacCache.CheckRoleAccess(ctx, role, permission, resource)
+		if err != nil {
+			log.Printf("failed to get data from cache, %s", err.Error())
+		}
+		unauthorizedErr := customerrors.NewError(
+			"unauthorize",
+			fmt.Errorf("rbac for role: %d, permission: %d, resource: %d is not found in rbac records", role, permission, resource),
+			customerrors.Unauthorized,
+		)
+		if cacheHasAccess != nil {
+			log.Printf("use rbac data from redis cache, rbac-%d:%d:%d => %v", role, permission, resource, *cacheHasAccess)
+			ctx.Header(constant.CACHE_STATUS_KEY, constant.CACHE_STATUS_HIT)
+			if !*cacheHasAccess {
+				ctx.Error(unauthorizedErr)
+				ctx.Abort()
+				return
+			}
+
+			ctx.Next()
 			return
 		}
-		if !ok {
-			ctx.Error(
-				customerrors.NewError(
-					"unauthorize",
-					errors.New("user's role dont have access to this permission/resource"),
-					customerrors.Unauthorized,
-				))
+
+		hasAccess, checkRoleErr := rbacr.CheckRoleAccess(ctx, role, permission, resource)
+		if checkRoleErr != nil {
+			ctx.Error(customerrors.NewError(
+				"cannot identified access",
+				errors.New("cannot check if role has access"),
+				customerrors.Unauthorized,
+			))
 			ctx.Abort()
 			return
 		}
 
+		const cacheDuration = 604800 // 1 week
+		if !hasAccess {
+			ctx.Error(unauthorizedErr)
+			if err := rbacCache.SetCheckRoleAccess(ctx, role, permission, resource, cacheDuration, false); err != nil {
+				log.Printf("failed to set rbac key rbac-%d:%d:%d, error: %s\n", role, permission, resource, err.Error())
+			}
+			ctx.Abort()
+			return
+		}
+
+		if err := rbacCache.SetCheckRoleAccess(ctx, role, permission, resource, cacheDuration, true); err != nil {
+			log.Printf("failed to set rbac key rbac-%d:%d:%d, error: %s\n", role, permission, resource, err.Error())
+		}
+
+		ctx.Header(constant.CACHE_STATUS_KEY, constant.CACHE_STATUS_MISS)
 		ctx.Next()
 	}
 }

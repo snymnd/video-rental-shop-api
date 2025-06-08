@@ -5,15 +5,18 @@ import (
 	"vrs-api/internal/delivery/rest"
 	"vrs-api/internal/delivery/rest/route"
 	"vrs-api/internal/repository/postgresql"
+	redisRepo "vrs-api/internal/repository/redis"
 	"vrs-api/internal/usecase"
 	util "vrs-api/internal/util/jwt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"github.com/spf13/viper"
 )
 
 type BootstrapConfig struct {
 	DB           *sql.DB
+	Cache        *redis.Client
 	App          *gin.Engine
 	TokenManager *util.TokenManager
 	Config       *viper.Viper
@@ -28,6 +31,7 @@ func Bootstrap(config *BootstrapConfig) {
 	rentalRepository := postgresql.NewRentalRepository(config.DB)
 	paymentRepository := postgresql.NewPaymentRepository(config.DB)
 	txRepository := postgresql.NewTxRepository(config.DB)
+	rbacCacheRepository := redisRepo.NewRBACCacheRepository(config.Cache)
 
 	// setup use cases
 	userUseCase := usecase.NewUsersUsecase(userRepository, config.TokenManager)
@@ -42,13 +46,14 @@ func Bootstrap(config *BootstrapConfig) {
 	paymentController := rest.NewPaymentController(paymentUsecase)
 
 	routeConfig := route.RouteConfig{
-		App:               config.App,
-		TokenManager:      config.TokenManager,
-		UserController:    userController,
-		RBACRepository:    rbacRepository,
-		VideoController:   videoController,
-		RentalController:  rentalController,
-		PaymentController: paymentController,
+		App:                 config.App,
+		TokenManager:        config.TokenManager,
+		UserController:      userController,
+		RBACRepository:      rbacRepository,
+		RBACCacheRepository: rbacCacheRepository,
+		VideoController:     videoController,
+		RentalController:    rentalController,
+		PaymentController:   paymentController,
 	}
 	routeConfig.Setup()
 }
