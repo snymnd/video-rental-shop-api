@@ -11,23 +11,26 @@ func NewViper() *viper.Viper {
 	config := viper.New()
 	log := logger.GetLogger()
 
+	// Set up config to read from environment variables as well
+	config.AutomaticEnv()
+
 	// find .env file with relative path
 	var err error
 	path := "./"
 	maxFolderDepth := 10
 	for range maxFolderDepth {
-		viper.AddConfigPath(path)
-		viper.SetConfigName(".env")
-		err = viper.ReadInConfig()
+		config.AddConfigPath(path)
+		// Find .env file with relative path
+		config.SetConfigName(".env")
+		config.SetConfigType("env")
+		err = config.ReadInConfig()
 		if err == nil {
 			break
 		}
-
 		if errors.As(err, &viper.ConfigFileNotFoundError{}) {
-			path = path + "/"
+			path += "../"
 			continue
 		}
-
 		log.Fatalf("failed to parse config, error: " + err.Error())
 	}
 	return config
