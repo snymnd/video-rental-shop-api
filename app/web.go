@@ -10,11 +10,12 @@ import (
 	"vrs-api/internal/config"
 	"vrs-api/internal/util/logger"
 	"vrs-api/internal/util/token"
+	"vrs-api/internal/util/viper"
 )
 
 func Run() {
 	log := logger.GetLogger()
-	viperConfig := config.NewViper()
+	viperConfig := viper.NewViper()
 	dbConn := config.NewDbConnection(viperConfig)
 	cacheConn := config.NewRedisClient(viperConfig)
 	tokenManager := token.NewTokenManager(viperConfig)
