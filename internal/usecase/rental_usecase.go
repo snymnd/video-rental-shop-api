@@ -174,8 +174,8 @@ func (ru *rentalUsecase) ReturnVideos(ctx context.Context, renturnVideosParams e
 				if daysLate >= 1 {
 					lateFee := float64(daysLate) * constant.LATE_FEE
 
-					if lateFee > constant.MAX_CAP_FEE {
-						lateFee = constant.MAX_CAP_FEE
+					if lateFee > constant.MAX_CAP_LATE_FEE {
+						lateFee = constant.MAX_CAP_LATE_FEE
 					}
 
 					video := videoIDVideoMap[rental.VideoID]
