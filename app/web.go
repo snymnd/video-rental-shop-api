@@ -2,21 +2,22 @@ package app
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 	"vrs-api/internal/config"
-	util "vrs-api/internal/util/jwt"
+	"vrs-api/internal/util/logger"
+	"vrs-api/internal/util/token"
 )
 
 func Run() {
+	log := logger.GetLogger()
 	viperConfig := config.NewViper()
 	dbConn := config.NewDbConnection(viperConfig)
 	cacheConn := config.NewRedisClient(viperConfig)
-	tokenManager := util.NewTokenManager(viperConfig)
+	tokenManager := token.NewTokenManager(viperConfig)
 	defer config.CloseDB(dbConn)
 	app := config.NewGin()
 
@@ -35,7 +36,7 @@ func Run() {
 		Handler: app.Handler(),
 	}
 	go func() {
-		log.Printf("Server started, listen on port %s", port)
+		log.Infof("Server started, listen on port %s", port)
 
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
@@ -47,16 +48,16 @@ func Run() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	log.Println("Shutdown Server ...")
+	log.Infof("Shutdown Server ...")
 	timeout := viperConfig.GetInt("GRACEFUL_TIMEOUT")
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
 	if err := server.Shutdown(ctx); err != nil {
-		log.Println("Server Shutdown:", err)
+		log.Infof("Server Shutdown:", err)
 	}
 
 	<-ctx.Done()
-	log.Printf("timeout of %d seconds. \n", timeout)
-	log.Println("Server exiting")
+	log.Infof("timeout of %d seconds. \n", timeout)
+	log.Info("Server exiting")
 }

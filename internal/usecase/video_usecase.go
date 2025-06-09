@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 	"errors"
-	"log"
 	"vrs-api/internal/customerrors"
 	"vrs-api/internal/entity"
+	"vrs-api/internal/util/logger"
 )
 
 type (
@@ -38,15 +38,16 @@ func (vu *videoUsecase) CreateVideo(ctx context.Context, video *entity.Video) er
 }
 
 func (vu *videoUsecase) GetVideos(ctx context.Context, params entity.GetVideosParams) (videos entity.GetVideosReturn, err error) {
+	log := logger.GetLogger()
 	videos, err = vu.vcr.FetchAll(ctx, params)
 	if err != nil && !errors.Is(err, customerrors.ErrCacheKeyNotFound) {
-		log.Printf("ERROR: failed to get videos from cache, error: %s\n", err.Error())
+		log.Errorf("failed to get videos from cache, error: %s\n", err.Error())
 	}
 
 	// If cache hit, return cached data
 	if err == nil {
 		cacheKey := vu.vcr.GetFetchAllKey(params)
-		log.Printf("use videos data from redis cache key %s", cacheKey)
+		log.Infof("use videos data from redis cache key %s", cacheKey)
 		return videos, nil
 	}
 
@@ -55,7 +56,7 @@ func (vu *videoUsecase) GetVideos(ctx context.Context, params entity.GetVideosPa
 		return videos, err
 	}
 	if err := vu.vcr.SetFetchAll(ctx, params, videos); err != nil {
-		log.Printf("ERROR: failed to set videos to cache, error: %s\n", err.Error())
+		log.Errorf("failed to set videos to cache, error: %s\n", err.Error())
 	}
 
 	return videos, nil

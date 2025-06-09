@@ -8,7 +8,7 @@ import (
 	"vrs-api/internal/customerrors"
 	"vrs-api/internal/dto"
 	"vrs-api/internal/entity"
-	util "vrs-api/internal/util/jwt"
+	"vrs-api/internal/util/token"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,7 +36,7 @@ func (rc *RentalController) RentVideos(ctx *gin.Context) {
 	}
 
 	// get token payload and user id from token subject claims
-	authPayload := ctx.Value(constant.CTX_AUTH_PAYLOAD_KEY).(*util.JWTCustomClaims)
+	authPayload := ctx.Value(constant.CTX_AUTH_PAYLOAD_KEY).(*token.JWTCustomClaims)
 	if authPayload == nil {
 		ctx.Error(customerrors.ErrFailedGetAuthPayload)
 		return

@@ -8,24 +8,27 @@ import (
 	"vrs-api/internal/dto"
 	"vrs-api/internal/repository/postgresql"
 	"vrs-api/internal/repository/redis"
-	util "vrs-api/internal/util/jwt"
+	utilLogger "vrs-api/internal/util/logger"
+	utilToken "vrs-api/internal/util/token"
 
 	"github.com/gin-gonic/gin"
 )
 
 type RouteConfig struct {
 	App                 *gin.Engine
+	TokenManager        *utilToken.TokenManager
+	Logger              *utilLogger.Logger
 	UserController      *rest.UserController
 	VideoController     *rest.VideoController
 	RentalController    *rest.RentalController
 	RBACRepository      *postgresql.RBACRepository
 	RBACCacheRepository *redis.RBACCacheRepository
-	TokenManager        *util.TokenManager
 	PaymentController   *rest.PaymentController
 }
 
 func (c *RouteConfig) Setup() {
 	c.App.Use(middleware.RequestIDMiddleware())
+	c.App.Use(middleware.LoggerMiddleware())
 	c.App.Use(middleware.ErrorMiddleware())
 	c.SetupPublicRoute()
 	c.SetupPrivateRoute()

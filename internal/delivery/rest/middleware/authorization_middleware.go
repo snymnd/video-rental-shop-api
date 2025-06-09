@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"vrs-api/internal/constant"
 	"vrs-api/internal/customerrors"
-	util "vrs-api/internal/util/jwt"
+	"vrs-api/internal/util/logger"
+	"vrs-api/internal/util/token"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +24,7 @@ type (
 
 func AuthorizationMiddleware(permission, resource int, rbacr RBACRepository, rbacCache RBACCacheRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		log := logger.GetLogger()
 		// get token payload and user id from token subject claims
 		authPayloadCtx := ctx.Value(constant.CTX_AUTH_PAYLOAD_KEY)
 		if authPayloadCtx == nil {
@@ -36,12 +37,12 @@ func AuthorizationMiddleware(permission, resource int, rbacr RBACRepository, rba
 			ctx.Abort()
 			return
 		}
-		authPayload := authPayloadCtx.(*util.JWTCustomClaims)
+		authPayload := authPayloadCtx.(*token.JWTCustomClaims)
 		role := authPayload.Role
 
 		cacheHasAccess, err := rbacCache.CheckRoleAccess(ctx, role, permission, resource)
 		if err != nil {
-			log.Printf("failed to get data from cache, %s", err.Error())
+			log.Errorf("failed to get data from cache, %s", err.Error())
 		}
 		unauthorizedErr := customerrors.NewError(
 			"unauthorize",
@@ -49,7 +50,7 @@ func AuthorizationMiddleware(permission, resource int, rbacr RBACRepository, rba
 			customerrors.Unauthorized,
 		)
 		if cacheHasAccess != nil {
-			log.Printf("use rbac data from redis cache, rbac-%d:%d:%d => %v", role, permission, resource, *cacheHasAccess)
+			log.Infof("use rbac data from redis cache, rbac-%d:%d:%d => %v", role, permission, resource, *cacheHasAccess)
 			if !*cacheHasAccess {
 				ctx.Error(unauthorizedErr)
 				ctx.Abort()
@@ -75,14 +76,14 @@ func AuthorizationMiddleware(permission, resource int, rbacr RBACRepository, rba
 		if !hasAccess {
 			ctx.Error(unauthorizedErr)
 			if err := rbacCache.SetCheckRoleAccess(ctx, role, permission, resource, cacheDuration, false); err != nil {
-				log.Printf("failed to set rbac key rbac-%d:%d:%d, error: %s\n", role, permission, resource, err.Error())
+				log.Errorf("failed to set rbac key rbac-%d:%d:%d, error: %s\n", role, permission, resource, err.Error())
 			}
 			ctx.Abort()
 			return
 		}
 
 		if err := rbacCache.SetCheckRoleAccess(ctx, role, permission, resource, cacheDuration, true); err != nil {
-			log.Printf("failed to set rbac key rbac-%d:%d:%d, error: %s\n", role, permission, resource, err.Error())
+			log.Errorf("failed to set rbac key rbac-%d:%d:%d, error: %s\n", role, permission, resource, err.Error())
 		}
 
 		ctx.Next()

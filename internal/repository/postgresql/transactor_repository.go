@@ -3,8 +3,8 @@ package postgresql
 import (
 	"context"
 	"database/sql"
-	"log"
 	"vrs-api/internal/customerrors"
+	"vrs-api/internal/util/logger"
 )
 
 type transactor struct {
@@ -28,6 +28,7 @@ type DBinf interface {
 const TRANSACTION_KEY = "txkey"
 
 func (wt *transactor) WithTx(ctx context.Context, tFunc func(ctx context.Context) error) error {
+	log := logger.GetLogger()
 	// begin transaction
 	tx, err := wt.conn.Begin()
 	if err != nil {
@@ -40,7 +41,7 @@ func (wt *transactor) WithTx(ctx context.Context, tFunc func(ctx context.Context
 
 	defer func() {
 		if errTx := tx.Rollback(); errTx != nil {
-			log.Printf("close transaction: %v", errTx)
+			log.Info("close transaction: %v", errTx)
 		}
 	}()
 

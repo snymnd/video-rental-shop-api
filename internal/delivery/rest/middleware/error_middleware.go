@@ -3,10 +3,10 @@ package middleware
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"vrs-api/internal/customerrors"
 	"vrs-api/internal/dto"
+	"vrs-api/internal/util/logger"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -15,6 +15,7 @@ import (
 func ErrorMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.Next()
+		log := logger.GetLogger()
 
 		if len(ctx.Errors) == 0 {
 			return
@@ -26,7 +27,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 			fieldErrors := make([]dto.DetailsError, 0)
 
 			for _, fe := range ve {
-				log.Println("ERROR:", fe.Error())
+				log.Error(fe.Error())
 
 				fieldErrors = append(fieldErrors, dto.DetailsError{
 					Title:   fe.Field(),
@@ -45,7 +46,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 
 		var ce *customerrors.CustomError
 		if errors.As(err, &ce) {
-			log.Println("ERROR:", ce.ErrorLog)
+			log.Error(ce.ErrorLog)
 
 			ctx.JSON(ce.GetHTTPErrorCode(), dto.ResponseError(dto.ErrorResponse{
 				Message: ce.ErrorMessage,
@@ -54,7 +55,7 @@ func ErrorMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		log.Println("ERROR:", err.Error())
+		log.Error(err.Error())
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, dto.ResponseError(dto.ErrorResponse{Message: "something went wrong"}))
 	}
 }

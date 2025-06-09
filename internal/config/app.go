@@ -7,7 +7,8 @@ import (
 	"vrs-api/internal/repository/postgresql"
 	redisRepo "vrs-api/internal/repository/redis"
 	"vrs-api/internal/usecase"
-	util "vrs-api/internal/util/jwt"
+	"vrs-api/internal/util/logger"
+	"vrs-api/internal/util/token"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
@@ -18,12 +19,12 @@ type BootstrapConfig struct {
 	DB           *sql.DB
 	Cache        *redis.Client
 	App          *gin.Engine
-	TokenManager *util.TokenManager
+	TokenManager *token.TokenManager
+	Logger       *logger.Logger
 	Config       *viper.Viper
 }
 
 func Bootstrap(config *BootstrapConfig) {
-
 	// setup repositories
 	userRepository := postgresql.NewUserRepository(config.DB)
 	rbacRepository := postgresql.NewRBACRepository(config.DB)
@@ -49,6 +50,7 @@ func Bootstrap(config *BootstrapConfig) {
 	routeConfig := route.RouteConfig{
 		App:                 config.App,
 		TokenManager:        config.TokenManager,
+		Logger:              config.Logger,
 		UserController:      userController,
 		RBACRepository:      rbacRepository,
 		RBACCacheRepository: rbacCacheRepository,
