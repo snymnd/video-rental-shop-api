@@ -1,0 +1,1682 @@
+{
+	"info": {
+		"_postman_id": "178d6c7f-07ac-44ff-9778-49a940b70bce",
+		"name": "video-rental-shop-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21669206"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"jhondoe@gmail.com\",\n  \"name\": \"Jhon Doe\",\n  \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}{{ver}}/auth/register",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"jhondoe@gmail.com\",\n  \"name\": \"Jhon Doe\",\n  \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/auth/register",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 12 May 2025 10:44:03 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "125"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"d75e196a-10d0-4620-863e-dd131816207c\",\n        \"email\": \"jhondoe@gmail.com\",\n        \"role\": \"\",\n        \"name\": \"Jhon Doe\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json()",
+							"pm.collectionVariables.set(\"token\", response.data.token.replace(/['\"]+/g, ''))"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "IdToken",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjI5MTYwNDksImlhdCI6MTY2MjkxNjA0OSwiVXNlciI6eyJpZCI6MTUsImVtYWlsIjoiYWFhQGdtYWlsLmNvbSJ9fQ.T9I3FXmrWM1cAdTae5Iu9-lsE2NhUNud7LcipcOnhiU",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"admin1@mail.com\",\n//   \"email\": \"user1@mail.com\",\n  \"password\": \"password\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}{{ver}}/auth/login",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Bad Request",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "IdToken",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjI5MTYwNDksImlhdCI6MTY2MjkxNjA0OSwiVXNlciI6eyJpZCI6MTUsImVtYWlsIjoiYWFhQGdtYWlsLmNvbSJ9fQ.T9I3FXmrWM1cAdTae5Iu9-lsE2NhUNud7LcipcOnhiU",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"registe2gmailcom\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/auth/login",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 12 May 2025 10:42:00 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "141"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"input validation errors\",\n        \"details\": [\n            \"invalid input on field Email\",\n            \"invalid input on field Password\"\n        ]\n    }\n}"
+				},
+				{
+					"name": "Invalid Credential",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "IdToken",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjI5MTYwNDksImlhdCI6MTY2MjkxNjA0OSwiVXNlciI6eyJpZCI6MTUsImVtYWlsIjoiYWFhQGdtYWlsLmNvbSJ9fQ.T9I3FXmrWM1cAdTae5Iu9-lsE2NhUNud7LcipcOnhiU",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"notfound@gmail.com\",\n  \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/v1/auth/login",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"v1",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 12 May 2025 10:42:31 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "69"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"email or password is invalid\"\n    }\n}"
+				},
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "IdToken",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjI5MTYwNDksImlhdCI6MTY2MjkxNjA0OSwiVXNlciI6eyJpZCI6MTUsImVtYWlsIjoiYWFhQGdtYWlsLmNvbSJ9fQ.T9I3FXmrWM1cAdTae5Iu9-lsE2NhUNud7LcipcOnhiU",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"jhondoe@gmail.com\",\n  \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/auth/login",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 12 May 2025 11:35:15 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "381"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"d75e196a-10d0-4620-863e-dd131816207c\",\n        \"email\": \"jhondoe@gmail.com\",\n        \"name\": \"Jhon Doe\",\n        \"role\": \"user\",\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoidXNlciIsImlzcyI6IlZpZGVvIFJlbnRhbCBTaG9wIiwic3ViIjoiZDc1ZTE5NmEtMTBkMC00NjIwLTg2M2UtZGQxMzE4MTYyMDdjIiwiZXhwIjoxNzQ3MTM2MTE1LCJpYXQiOjE3NDcwNDk3MTV9.rh1inTk9XcKemq7qvmg_qrgrP0VlA50XU0w1aIheWx0\"\n    }\n}"
+				},
+				{
+					"name": "Success Admin",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "IdToken",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjI5MTYwNDksImlhdCI6MTY2MjkxNjA0OSwiVXNlciI6eyJpZCI6MTUsImVtYWlsIjoiYWFhQGdtYWlsLmNvbSJ9fQ.T9I3FXmrWM1cAdTae5Iu9-lsE2NhUNud7LcipcOnhiU",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin1@mail.com\",\n  \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/auth/login",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 13 May 2025 16:17:48 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "366"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"20e08e0f-3f82-43cb-a9db-7d7319e2dcf7\",\n        \"email\": \"admin1@mail.com\",\n        \"name\": \"admin1\",\n        \"role\": 2,\n        \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoyLCJpc3MiOiJWaWRlbyBSZW50YWwgU2hvcCIsInN1YiI6IjIwZTA4ZTBmLTNmODItNDNjYi1hOWRiLTdkNzMxOWUyZGNmNyIsImV4cCI6MTc0NzIzOTQ2OCwiaWF0IjoxNzQ3MTUzMDY4fQ.IGLkM-0ibAIRgRHluRsiqebb_ADoNMoz_eCQNFL44o4\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Private Route",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}{{ver}}/private",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"private"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/private",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"private"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "X-Request-Id",
+							"value": "5609822a-e24c-4f4e-9187-67a3b7375cc2"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 09 Jun 2025 17:59:41 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "57"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": \"success to access private route\"\n}"
+				},
+				{
+					"name": "No Authorization Header",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/private",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"private"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "X-Request-Id",
+							"value": "ee6d5da7-a0c0-4d15-851a-191f8a4cb2c7"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 09 Jun 2025 18:00:34 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "71"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"authorization header not found\"\n    }\n}"
+				},
+				{
+					"name": "Token Expired",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/private",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"private"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "X-Request-Id",
+							"value": "7d327aed-7bf3-4531-8c9b-19dd62d24afe"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 09 Jun 2025 18:01:11 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "58"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"token has expired\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Private Route - Admin",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}{{ver}}/private/admin",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"private",
+						"admin"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/private/admin",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"private",
+								"admin"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Cache-Status",
+							"value": "Hit"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 08 Jun 2025 15:15:22 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "68"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": \"success to access admin only private route\"\n}"
+				},
+				{
+					"name": "Unauthorized",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/private/admin",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"private",
+								"admin"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "X-Request-Id",
+							"value": "25d20079-48e7-4638-9c0f-2bd98fb8887d"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 09 Jun 2025 17:58:34 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "52"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"unauthorize\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Test Private Route - User",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}{{ver}}/private/user",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"private",
+						"user"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/private/user",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"private",
+								"user"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "X-Request-Id",
+							"value": "67917585-5872-4fca-8362-a9b32c828063"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 09 Jun 2025 17:57:57 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "67"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": \"success to access user only private route\"\n}"
+				},
+				{
+					"name": "Unauthorized",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/private/user",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"private",
+								"user"
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "X-Request-Id",
+							"value": "ee0130a5-7777-4cfb-9e8f-73e2d80172dc"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 09 Jun 2025 17:59:06 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "52"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"unauthorize\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Create Video",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Naruto 7\",\n    \"overview\": \"Journey of ninja named Naruto to be Hokage\",\n    \"format\": \"bluray\",\n    \"total_stock\": 30,\n    \"cover_path\": \"https://upload.wikimedia.org/wikipedia/id/thumb/9/94/NarutoCoverTankobon1.jpg/250px-NarutoCoverTankobon1.jpg\",\n    \"production_company\": \"Production IG\",\n    \"rent_price\": 5.02,\n    \"genre_ids\": [4,1]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}{{ver}}/videos",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"videos"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Naruto5\",\n    \"overview\": \"Story of naruto\",\n    \"format\": \"vhs\",\n    \"total_stock\": 10,\n    \"cover_path\": \"https://upload.wikimedia.org/wikipedia/id/thumb/9/94/NarutoCoverTankobon1.jpg/250px-NarutoCoverTankobon1.jpg\",\n    \"production_company\": \"studio pierrot\",\n    \"rent_price\": 4.51,\n    \"genre_ids\": [7,1]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/videos",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"videos"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 17 May 2025 14:40:02 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "333"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"11\",\n        \"title\": \"Naruto5\",\n        \"overview\": \"Story of naruto\",\n        \"format\": \"vhs\",\n        \"genre_ids\": [\n            7,\n            1\n        ],\n        \"rent_price\": 4.51,\n        \"total_stock\": 10,\n        \"available_stock\": 10,\n        \"cover_path\": \"https://upload.wikimedia.org/wikipedia/id/thumb/9/94/NarutoCoverTankobon1.jpg/250px-NarutoCoverTankobon1.jpg\",\n        \"production_company\": \"studio pierrot\"\n    }\n}"
+				},
+				{
+					"name": "Bad Request",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Suster Gayung 90\",\n    \"overview\": \"Suster who loved gayung\",\n    \"format\": \"bluray\",\n    \"cover_path\": \"https://upload.wikimedia.org/wikipedia/id/thumb/9/94/NarutoCoverTankobon1.jpg/250px-NarutoCoverTankobon1.jpg\",\n    \"production_company\": \"MD\",\n    \"rent_price\": 4.51,\n    \"genre_ids\": [7,1]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/videos",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"videos"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "X-Request-Id",
+							"value": "ea722c57-2d45-41f4-ba86-4d68218a0fad"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 09 Jun 2025 18:02:05 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "145"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"input validation errors\",\n        \"details\": [\n            {\n                \"field\": \"TotalStock\",\n                \"message\": \"invalid input on field TotalStock\"\n            }\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Get Videos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}{{ver}}/videos?page=1&limit=5&title=naruto&order_sort=desc&[]order_by=rent_price&[]order_by=available_stock&[]genres=1&[]genres=7",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"videos"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "limit",
+							"value": "5"
+						},
+						{
+							"key": "title",
+							"value": "naruto"
+						},
+						{
+							"key": "order_sort",
+							"value": "desc"
+						},
+						{
+							"key": "[]order_by",
+							"value": "rent_price"
+						},
+						{
+							"key": "[]order_by",
+							"value": "available_stock"
+						},
+						{
+							"key": "[]genres",
+							"value": "1"
+						},
+						{
+							"key": "[]genres",
+							"value": "7"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{ver}}/videos",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"videos"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "title",
+									"value": "titanic",
+									"disabled": true
+								},
+								{
+									"key": "order_sort",
+									"value": "desc",
+									"disabled": true
+								},
+								{
+									"key": "[]order_by",
+									"value": "total_stock",
+									"disabled": true
+								},
+								{
+									"key": "[]order_by",
+									"value": "available_stock",
+									"disabled": true
+								},
+								{
+									"key": "[]genres",
+									"value": "string",
+									"disabled": true
+								},
+								{
+									"key": "[]genres",
+									"value": "2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 03 Jun 2025 16:16:47 GMT"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"entries\": [\n            {\n                \"id\": 1,\n                \"title\": \"The Matrix\",\n                \"overview\": \"A computer hacker learns about reality and his role in the fight against machines.\",\n                \"format\": \"bluray\",\n                \"rent_price\": 4.99,\n                \"genre_ids\": [\n                    1,\n                    8\n                ],\n                \"total_stock\": 10,\n                \"available_stock\": 13,\n                \"cover_path\": \"/covers/matrix.jpg\",\n                \"production_company\": \"Warner Bros.\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            },\n            {\n                \"id\": 2,\n                \"title\": \"Inception\",\n                \"overview\": \"A thief who steals corporate secrets through dream-sharing technology is given a final job.\",\n                \"format\": \"dvd\",\n                \"rent_price\": 3.99,\n                \"genre_ids\": [\n                    1,\n                    8,\n                    5\n                ],\n                \"total_stock\": 15,\n                \"available_stock\": 17,\n                \"cover_path\": \"/covers/inception.jpg\",\n                \"production_company\": \"Warner Bros.\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            },\n            {\n                \"id\": 3,\n                \"title\": \"Pulp Fiction\",\n                \"overview\": \"The lives of two mob hitmen, a boxer, a gangster and his wife intertwine.\",\n                \"format\": \"bluray\",\n                \"rent_price\": 4.5,\n                \"genre_ids\": [\n                    1,\n                    5\n                ],\n                \"total_stock\": 8,\n                \"available_stock\": 5,\n                \"cover_path\": \"/covers/pulpfiction.jpg\",\n                \"production_company\": \"Miramax\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            },\n            {\n                \"id\": 4,\n                \"title\": \"The Shawshank Redemption\",\n                \"overview\": \"Two imprisoned men bond over a number of years.\",\n                \"format\": \"dvd\",\n                \"rent_price\": 3.5,\n                \"genre_ids\": [\n                    5\n                ],\n                \"total_stock\": 12,\n                \"available_stock\": 10,\n                \"cover_path\": \"/covers/shawshank.jpg\",\n                \"production_company\": \"Castle Rock Entertainment\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            },\n            {\n                \"id\": 5,\n                \"title\": \"Avengers: Endgame\",\n                \"overview\": \"The Avengers take a final stand against Thanos.\",\n                \"format\": \"digital\",\n                \"rent_price\": 5.99,\n                \"genre_ids\": [\n                    1,\n                    8\n                ],\n                \"total_stock\": 20,\n                \"available_stock\": 0,\n                \"cover_path\": \"/covers/endgame.jpg\",\n                \"production_company\": \"Marvel Studios\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            },\n            {\n                \"id\": 6,\n                \"title\": \"Parasite\",\n                \"overview\": \"A poor family schemes to become employed by a wealthy family.\",\n                \"format\": \"bluray\",\n                \"rent_price\": 4.99,\n                \"genre_ids\": [\n                    5,\n                    3\n                ],\n                \"total_stock\": 7,\n                \"available_stock\": 0,\n                \"cover_path\": \"/covers/parasite.jpg\",\n                \"production_company\": \"CJ Entertainment\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            },\n            {\n                \"id\": 7,\n                \"title\": \"The Lion King\",\n                \"overview\": \"A young lion prince flees his kingdom after the murder of his father.\",\n                \"format\": \"dvd\",\n                \"rent_price\": 3.5,\n                \"genre_ids\": [\n                    7\n                ],\n                \"total_stock\": 18,\n                \"available_stock\": 15,\n                \"cover_path\": \"/covers/lionking.jpg\",\n                \"production_company\": \"Walt Disney Pictures\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            },\n            {\n                \"id\": 8,\n                \"title\": \"Joker\",\n                \"overview\": \"A mentally troubled comedian embarks on a downward spiral.\",\n                \"format\": \"digital\",\n                \"rent_price\": 5.5,\n                \"genre_ids\": [\n                    5\n                ],\n                \"total_stock\": 10,\n                \"available_stock\": 9,\n                \"cover_path\": \"/covers/joker.jpg\",\n                \"production_company\": \"Warner Bros.\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            },\n            {\n                \"id\": 9,\n                \"title\": \"The Godfather\",\n                \"overview\": \"The aging patriarch of an organized crime dynasty transfers control to his son.\",\n                \"format\": \"bluray\",\n                \"rent_price\": 4.99,\n                \"genre_ids\": [\n                    1,\n                    5\n                ],\n                \"total_stock\": 5,\n                \"available_stock\": 3,\n                \"cover_path\": \"/covers/godfather.jpg\",\n                \"production_company\": \"Paramount Pictures\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            },\n            {\n                \"id\": 10,\n                \"title\": \"Titanic\",\n                \"overview\": \"A seventeen-year-old aristocrat falls in love with a kind but poor artist aboard the luxurious, ill-fated R.M.S. Titanic.\",\n                \"format\": \"dvd\",\n                \"rent_price\": 3.99,\n                \"genre_ids\": [\n                    2,\n                    5\n                ],\n                \"total_stock\": 15,\n                \"available_stock\": 12,\n                \"cover_path\": \"/covers/titanic.jpg\",\n                \"production_company\": \"Paramount Pictures\",\n                \"created_at\": \"2025-06-02T23:58:26.846835Z\"\n            }\n        ],\n        \"page_info\": {\n            \"page\": 1,\n            \"limit\": 0,\n            \"order_by\": null,\n            \"order_sort\": \"\",\n            \"filters\": [\n                {\n                    \"field\": \"title\",\n                    \"value\": \"\"\n                },\n                {\n                    \"field\": \"genre_ids\",\n                    \"value\": null\n                }\n            ],\n            \"total_row\": 10\n        }\n    }\n}"
+				},
+				{
+					"name": "Success - with Query",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{ver}}/videos?page=1&limit=5&title=naruto&order_sort=desc&[]order_by=rent_price&[]order_by=available_stock&[]genres=1&[]genres=7",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"videos"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								},
+								{
+									"key": "title",
+									"value": "naruto"
+								},
+								{
+									"key": "order_sort",
+									"value": "desc"
+								},
+								{
+									"key": "[]order_by",
+									"value": "rent_price"
+								},
+								{
+									"key": "[]order_by",
+									"value": "available_stock"
+								},
+								{
+									"key": "[]genres",
+									"value": "1"
+								},
+								{
+									"key": "[]genres",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "X-Request-Id",
+							"value": "6968f242-7992-4a46-a141-d2480d2e6f6f"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 09 Jun 2025 18:17:58 GMT"
+						},
+						{
+							"key": "Transfer-Encoding",
+							"value": "chunked"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"entries\": [\n            {\n                \"id\": 18,\n                \"title\": \"Naruto 7\",\n                \"overview\": \"Journey of ninja named Naruto to be Hokage\",\n                \"format\": \"bluray\",\n                \"rent_price\": 5.02,\n                \"genre_ids\": [\n                    4,\n                    1\n                ],\n                \"total_stock\": 30,\n                \"available_stock\": 30,\n                \"cover_path\": \"https://upload.wikimedia.org/wikipedia/id/thumb/9/94/NarutoCoverTankobon1.jpg/250px-NarutoCoverTankobon1.jpg\",\n                \"production_company\": \"Production IG\",\n                \"created_at\": \"2025-06-10T01:16:01.054085Z\"\n            },\n            {\n                \"id\": 14,\n                \"title\": \"Naruto 3\",\n                \"overview\": \"Journey of ninja named Naruto to be Hokage\",\n                \"format\": \"bluray\",\n                \"rent_price\": 4.05,\n                \"genre_ids\": [\n                    7,\n                    1\n                ],\n                \"total_stock\": 94,\n                \"available_stock\": 94,\n                \"cover_path\": \"https://upload.wikimedia.org/wikipedia/id/thumb/9/94/NarutoCoverTankobon1.jpg/250px-NarutoCoverTankobon1.jpg\",\n                \"production_company\": \"Production IG\",\n                \"created_at\": \"2025-06-10T01:13:47.678641Z\"\n            },\n            {\n                \"id\": 13,\n                \"title\": \"Naruto 2\",\n                \"overview\": \"Suster who loved gayung\",\n                \"format\": \"bluray\",\n                \"rent_price\": 4.03,\n                \"genre_ids\": [\n                    7,\n                    1\n                ],\n                \"total_stock\": 92,\n                \"available_stock\": 92,\n                \"cover_path\": \"https://upload.wikimedia.org/wikipedia/id/thumb/9/94/NarutoCoverTankobon1.jpg/250px-NarutoCoverTankobon1.jpg\",\n                \"production_company\": \"Production IG\",\n                \"created_at\": \"2025-06-10T01:13:00.140662Z\"\n            },\n            {\n                \"id\": 12,\n                \"title\": \"Naruto 1\",\n                \"overview\": \"Suster who loved gayung\",\n                \"format\": \"bluray\",\n                \"rent_price\": 4.01,\n                \"genre_ids\": [\n                    7,\n                    1\n                ],\n                \"total_stock\": 90,\n                \"available_stock\": 90,\n                \"cover_path\": \"https://upload.wikimedia.org/wikipedia/id/thumb/9/94/NarutoCoverTankobon1.jpg/250px-NarutoCoverTankobon1.jpg\",\n                \"production_company\": \"Production IG\",\n                \"created_at\": \"2025-06-10T01:12:48.092311Z\"\n            },\n            {\n                \"id\": 16,\n                \"title\": \"Naruto 5\",\n                \"overview\": \"Journey of ninja named Naruto to be Hokage\",\n                \"format\": \"bluray\",\n                \"rent_price\": 3.03,\n                \"genre_ids\": [\n                    7,\n                    1\n                ],\n                \"total_stock\": 84,\n                \"available_stock\": 84,\n                \"cover_path\": \"https://upload.wikimedia.org/wikipedia/id/thumb/9/94/NarutoCoverTankobon1.jpg/250px-NarutoCoverTankobon1.jpg\",\n                \"production_company\": \"Production IG\",\n                \"created_at\": \"2025-06-10T01:14:30.11327Z\"\n            }\n        ],\n        \"page_info\": {\n            \"page\": 1,\n            \"limit\": 5,\n            \"order_by\": [\n                \"rent_price\",\n                \"available_stock\"\n            ],\n            \"order_sort\": \"desc\",\n            \"filters\": [\n                {\n                    \"field\": \"title\",\n                    \"value\": \"naruto\"\n                },\n                {\n                    \"field\": \"genre_ids\",\n                    \"value\": [\n                        1,\n                        7\n                    ]\n                }\n            ],\n            \"total_row\": 7\n        }\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Create Rentals",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "IdToken",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjI5MTYwNDksImlhdCI6MTY2MjkxNjA0OSwiVXNlciI6eyJpZCI6MTUsImVtYWlsIjoiYWFhQGdtYWlsLmNvbSJ9fQ.T9I3FXmrWM1cAdTae5Iu9-lsE2NhUNud7LcipcOnhiU",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"videos_id\": [\n        6\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}{{ver}}/rentals",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"rentals"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Bad Request - Some Video Not Available",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "IdToken",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjI5MTYwNDksImlhdCI6MTY2MjkxNjA0OSwiVXNlciI6eyJpZCI6MTUsImVtYWlsIjoiYWFhQGdtYWlsLmNvbSJ9fQ.T9I3FXmrWM1cAdTae5Iu9-lsE2NhUNud7LcipcOnhiU",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"videos_id\": [8,9,1]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/rentals",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"rentals"
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Fri, 16 May 2025 18:47:38 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "193"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"Some videos are not available\",\n        \"details\": [\n            {\n                \"field\": \"1\",\n                \"message\": \"The Matrix is not available\"\n            },\n            {\n                \"field\": \"9\",\n                \"message\": \"The Godfather is not available\"\n            }\n        ]\n    }\n}"
+				},
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "IdToken",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjI5MTYwNDksImlhdCI6MTY2MjkxNjA0OSwiVXNlciI6eyJpZCI6MTUsImVtYWlsIjoiYWFhQGdtYWlsLmNvbSJ9fQ.T9I3FXmrWM1cAdTae5Iu9-lsE2NhUNud7LcipcOnhiU",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"videos_id\": [3,4]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/rentals",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"rentals"
+							]
+						}
+					},
+					"status": "Created",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Sat, 17 May 2025 14:45:49 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "681"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"payment_id\": 2,\n        \"expired_time\": \"2025-05-18T00:45:49.541672476+07:00\",\n        \"total_price\": 8,\n        \"videos_id\": [\n            {\n                \"id\": \"3\",\n                \"title\": \"Pulp Fiction\",\n                \"overview\": \"The lives of two mob hitmen, a boxer, a gangster and his wife intertwine.\",\n                \"format\": \"bluray\",\n                \"rent_price\": 4.5,\n                \"genre_ids\": [\n                    1,\n                    5\n                ],\n                \"total_stock\": 8,\n                \"available_stock\": 4,\n                \"cover_path\": \"/covers/pulpfiction.jpg\",\n                \"production_company\": \"Miramax\"\n            },\n            {\n                \"id\": \"4\",\n                \"title\": \"The Shawshank Redemption\",\n                \"overview\": \"Two imprisoned men bond over a number of years.\",\n                \"format\": \"dvd\",\n                \"rent_price\": 3.5,\n                \"genre_ids\": [\n                    5\n                ],\n                \"total_stock\": 12,\n                \"available_stock\": 9,\n                \"cover_path\": \"/covers/shawshank.jpg\",\n                \"production_company\": \"Castle Rock Entertainment\"\n            }\n        ]\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Return Rentals",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": \"d1d9519f-c6d7-4f3e-8ccb-55986c0e27d9\",\n    \"videos_id\": [\n        4,\n        8,\n        9\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}{{ver}}/rentals/return",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"rentals",
+						"return"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success - No Late Rentals",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"d1d9519f-c6d7-4f3e-8ccb-55986c0e27d9\",\n    \"videos_id\": [\n        3\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/rentals/return",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"rentals",
+								"return"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 05 Jun 2025 09:26:17 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "43"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"late_rentals\": []\n    }\n}"
+				},
+				{
+					"name": "Success - With Late Rentals",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"d1d9519f-c6d7-4f3e-8ccb-55986c0e27d9\",\n    \"videos_id\": [\n        4,\n        8,\n        9\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/rentals/return",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"rentals",
+								"return"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 05 Jun 2025 10:19:29 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "509"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": {\n        \"late_fee_payment_id\": 32,\n        \"expired_time\": \"2025-06-05T20:19:29.065304899+07:00\",\n        \"total_price\": 8,\n        \"late_rentals\": [\n            {\n                \"rental_id\": 16,\n                \"due_date\": \"2025-06-01T13:53:59.023063Z\",\n                \"days_late\": 4,\n                \"videos_id\": {\n                    \"id\": 4,\n                    \"title\": \"The Shawshank Redemption\",\n                    \"overview\": \"Two imprisoned men bond over a number of years.\",\n                    \"format\": \"dvd\",\n                    \"rent_price\": 3.5,\n                    \"genre_ids\": [\n                        5\n                    ],\n                    \"total_stock\": 12,\n                    \"available_stock\": 9,\n                    \"cover_path\": \"/covers/shawshank.jpg\",\n                    \"production_company\": \"Castle Rock Entertainment\"\n                },\n                \"late_fee\": 8\n            }\n        ]\n    }\n}"
+				},
+				{
+					"name": "Rental Not Found",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"user_id\": \"d1d9519f-c6d7-4f3e-8ccb-55986c0e27d9\",\n    \"videos_id\": [\n        4,\n        8,\n        9\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}{{ver}}/rentals/return",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"rentals",
+								"return"
+							]
+						}
+					},
+					"status": "Not Found",
+					"code": 404,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "X-Request-Id",
+							"value": "b55eac96-1007-4119-97ba-110aa1c4f1ad"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 09 Jun 2025 18:19:26 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "91"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"No rentals found for the specified user and videos\"\n    }\n}"
+				}
+			]
+		},
+		{
+			"name": "Pay Rentals",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}{{ver}}/payments/rentals/:method/:id",
+					"host": [
+						"{{base_url}}{{ver}}"
+					],
+					"path": [
+						"payments",
+						"rentals",
+						":method",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "method",
+							"value": "cash",
+							"description": "payment method,  allowed: transfer, cash, debit"
+						},
+						{
+							"key": "id",
+							"value": "31",
+							"description": "payment id"
+						}
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "Success",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{ver}}/payments/rentals/:method/:id",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"payments",
+								"rentals",
+								":method",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "method",
+									"value": "cash",
+									"description": "payment method,  allowed: transfer, cash, debit"
+								},
+								{
+									"key": "id",
+									"value": "30",
+									"description": "payment id"
+								}
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 05 Jun 2025 09:20:37 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "61"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": true,\n    \"data\": \"Payment id: 30 is successfully paid\"\n}"
+				},
+				{
+					"name": "Bad Request - Invalid Payment ID",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{ver}}/payments/rentals/:method/:id",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"payments",
+								"rentals",
+								":method",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "method",
+									"value": "cash",
+									"description": "payment method,  allowed: transfer, cash, debit"
+								},
+								{
+									"key": "id",
+									"value": "30",
+									"description": "payment id"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 05 Jun 2025 09:22:16 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "68"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"payment id must be a number\"\n    }\n}"
+				},
+				{
+					"name": "Bad Request - Invalid Payment Method",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{ver}}/payments/rentals/:method/:id",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"payments",
+								"rentals",
+								":method",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "method",
+									"value": "invalid-method",
+									"description": "payment method,  allowed: transfer, cash, debit"
+								},
+								{
+									"key": "id",
+									"value": "30",
+									"description": "payment id"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 05 Jun 2025 09:24:07 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "63"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"invalid payment method\"\n    }\n}"
+				},
+				{
+					"name": "Unauthorize",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/v1/payments/rentals/:method/:id",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"payments",
+								"rentals",
+								":method",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "method",
+									"value": "invalid-method",
+									"description": "payment method,  allowed: transfer, cash, debit"
+								},
+								{
+									"key": "id",
+									"value": "30",
+									"description": "payment id"
+								}
+							]
+						}
+					},
+					"status": "Unauthorized",
+					"code": 401,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 05 Jun 2025 09:35:33 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "52"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"unauthorize\"\n    }\n}"
+				},
+				{
+					"name": "Not Found",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}{{ver}}/payments/rentals/:method/:id",
+							"host": [
+								"{{base_url}}{{ver}}"
+							],
+							"path": [
+								"payments",
+								"rentals",
+								":method",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "method",
+									"value": "cash",
+									"description": "payment method,  allowed: transfer, cash, debit"
+								},
+								{
+									"key": "id",
+									"value": "30",
+									"description": "payment id"
+								}
+							]
+						}
+					},
+					"status": "Bad Request",
+					"code": 400,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json; charset=utf-8"
+						},
+						{
+							"key": "Date",
+							"value": "Thu, 05 Jun 2025 09:41:44 GMT"
+						},
+						{
+							"key": "Content-Length",
+							"value": "61"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"success\": false,\n    \"error\": {\n        \"messsage\": \"payment is not found\"\n    }\n}"
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "localhost:8000",
+			"type": "default"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ver",
+			"value": "/api/v1",
+			"type": "string"
+		}
+	]
+}
