@@ -60,7 +60,7 @@ func AuthenticateMiddleware(token Token) gin.HandlerFunc {
 			log.Error(err)
 
 			ctx.Error(customerrors.NewError(
-				"unsuppoerted authorization type",
+				"unsupported authorization type",
 				err,
 				customerrors.Unauthenticate,
 			))
