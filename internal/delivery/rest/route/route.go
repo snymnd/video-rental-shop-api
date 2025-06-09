@@ -25,6 +25,7 @@ type RouteConfig struct {
 }
 
 func (c *RouteConfig) Setup() {
+	c.App.Use(middleware.RequestIDMiddleware())
 	c.App.Use(middleware.ErrorMiddleware())
 	c.SetupPublicRoute()
 	c.SetupPrivateRoute()
