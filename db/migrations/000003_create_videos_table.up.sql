@@ -3,7 +3,7 @@ BEGIN;
 DO $$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'video_format') THEN
-        CREATE TYPE video_format AS ENUM ('dvd', 'bluray', 'digital', 'vhs');
+        CREATE TYPE video_format AS ENUM ('dvd', 'bluray', 'vhs');
     END IF;
 END $$;
 
