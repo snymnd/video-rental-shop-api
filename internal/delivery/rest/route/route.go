@@ -44,6 +44,7 @@ func (c *RouteConfig) SetupPublicRoute() {
 	})
 	v1.POST("/auth/register", c.UserController.Register)
 	v1.POST("/auth/login", c.UserController.Login)
+	v1.GET("/videos", c.VideoController.GetVideos)
 }
 
 func (c *RouteConfig) SetupPrivateRoute() {
@@ -52,10 +53,6 @@ func (c *RouteConfig) SetupPrivateRoute() {
 	v1.POST("/videos",
 		middleware.AuthorizationMiddleware(constant.PERM_CREATE, constant.RSC_VIDEOS, c.RBACRepository, c.RBACCacheRepository),
 		c.VideoController.CreateVideo,
-	)
-	v1.GET("/videos",
-		middleware.AuthorizationMiddleware(constant.PERM_READ_ALL, constant.RSC_VIDEOS, c.RBACRepository, c.RBACCacheRepository),
-		c.VideoController.GetVideos,
 	)
 	v1.POST("/rentals",
 		middleware.AuthorizationMiddleware(constant.PERM_CREATE, constant.RSC_RENTALS, c.RBACRepository, c.RBACCacheRepository),
