@@ -49,6 +49,8 @@ This project uses clean architecture, a software design approach that emphasizes
 
 ![Clean Architecture](https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg)
 
+(*source: https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg*)
+
 ```bash
 ...
 ├── delivery               # Interface adapters layer - Handles delivery method for data access
