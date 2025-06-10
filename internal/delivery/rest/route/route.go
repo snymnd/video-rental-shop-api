@@ -37,7 +37,7 @@ func (c *RouteConfig) Setup() {
 func (c *RouteConfig) SetupPublicRoute() {
 	v1 := c.App.Group("/api/v1")
 	v1.GET("/welcome", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusAccepted, dto.Response{
+		ctx.JSON(http.StatusOK, dto.Response{
 			Success: true,
 			Data:    "Welcome to video rental API",
 		})
