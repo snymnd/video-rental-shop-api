@@ -1,0 +1,11 @@
+.git/
+.gitignore
+
+.env.example
+
+LICENSE
+assets/
+.postman_collection.json
+.Readme.md
+
+

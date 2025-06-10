@@ -14,7 +14,7 @@ func main() {
 	if err := dbcommand.RunMigrations(isDown); err != nil {
 		log.Fatal(err)
 	}
-	log.Println("migrations applied successfully", isDown)
+	log.Println("migrations applied successfully")
 
 	if !isDown {
 		if err := dbcommand.RunSeeder(); err != nil {
