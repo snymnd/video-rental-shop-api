@@ -41,7 +41,6 @@ func (vcr *videoCacheRepository) FetchAll(ctx context.Context, params entity.Get
 const cacheDuration = 86400 // 1 day
 func (vcr *videoCacheRepository) SetFetchAll(ctx context.Context, params entity.GetVideosParams, value entity.GetVideosReturn) error {
 	cacheKey := vcr.GetFetchAllKey(params)
-	fmt.Println(cacheKey)
 
 	valueBytes, err := json.Marshal(value)
 	if err != nil {
