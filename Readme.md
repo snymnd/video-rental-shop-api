@@ -1,6 +1,6 @@
 # Video Rental Shop (VRS) API
 
-## App Requirement
+## App Requirements
 
 1. Users can register to the application with a user role.
 2. Users can log in to the application.
@@ -14,33 +14,38 @@
 10. Users cannot rent more than 1 copy of the same video title and format, but can rent the same title in different formats.
 11. Users can rent videos via the online application and collect the physical videos at the offline store later.
 12. Users can return videos only at the offline store.
-13. Users can return all rented videos at once or return only some videos and the rest later.
-14. Every rental has a due date of 3 days starting from when the rental(s) are paid.
+13. Users can return all rented videos at once or return only some videos and keep the rest for later return.
+14. Every rental has a due date of 3 days starting from when the payment is success.
 15. If videos are returned after the due date, users will be charged a late fee of $2 for each day beyond the due date, with a maximum cap of $30.
 16. Only admins are allowed to record returned videos by inputting user data (user ID) and processing the videos returned by the user.
 
 ## Entity Relationship Diagram (ERD)
 
-- Aplication business ERD
+- Application Business ERD
+
   ![video rental shop api erd](./assets/video-rental-shop-erd.png)
-  - `videos` - Stores information about available videos likes title, description, stock, and genre
+
+  - `videos` - Stores information about available videos like title, description, stock, and genre
   - `users` - Contains user account details such as name, email, and contact information
   - `rentals` - Tracks video borrowing transactions with rental dates and status
   - `payments` - Records financial transactions related to video rentals
   - `genres` - Categorizes videos by different types/categories
     <br><br>
-- Role base access control (RBAC) ERD
+
+- Role-Based Access Control (RBAC) ERD
+
   ![role base access control erd](./assets/rbac-erd.png)
+
   - `roles` - Defines user roles such as admin or user
   - `permissions` - Specifies allowed actions like create, read, update, and delete
   - `resource` - Represents system resources that can be accessed (videos, users, rentals)
   - `rbac` - Junction table that connects roles with permissions for specific resources
 
-> You can access full diagram here [video-rental-shop-dbdiagram.io](https://dbdiagram.io/d/video-rental-shop-erd-6836d3116980ade2ebd7538e)
+> You can access the full diagram here: [video-rental-shop-dbdiagram.io](https://dbdiagram.io/d/video-rental-shop-erd-6836d3116980ade2ebd7538e)
 
 ## Architecture
 
-This project is using clean architecture, a software architecture that emphasizes the separation of concerns, the independence of components, and the use of well-defined boundaries.
+This project uses clean architecture, a software design approach that emphasizes separation of concerns, component independence, and well-defined boundaries.
 
 ![Clean Architecture](https://blog.cleancoder.com/uncle-bob/images/2012-08-13-the-clean-architecture/CleanArchitecture.jpg)
 
@@ -67,49 +72,65 @@ This project is using clean architecture, a software architecture that emphasize
 └── util                   # Shared utilities and helper functions
 ```
 
-## Build With
+## Built With
 
 ![Go](https://img.shields.io/badge/-Go-333333?style=flat&logo=go)
 ![Gin](https://img.shields.io/badge/-Gin-333333?style=flat&logo=gin)
-![Postgresql](https://img.shields.io/badge/-Postgresql-333333?style=flat&logo=postgresql)
+![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-333333?style=flat&logo=postgresql)
 ![Redis](https://img.shields.io/badge/-Redis-333333?style=flat&logo=redis)
 
-## API Documentations
+## API Documentation
 
-You can access API documentation here https://documenter.getpostman.com/view/21669206/2sB2x3otYN
+You can access the API documentation here: https://documenter.getpostman.com/view/21669206/2sB2x3otYN
 
-Or you can import the
-[video-rental-shop-api.postman_collection.json](./video-rental-shop-api.postman_collection.json) using postman web or app.
+Alternatively, you can import the
+[video-rental-shop-api.postman_collection.json](./video-rental-shop-api.postman_collection.json) into the Postman web interface or desktop application.
 
 ## Getting Started
 
-### Run locally
+### Run with Docker Compose
 
-1. Make sure you have below dependencies installed
-   - Go ver. 1.24.0+
-   - Postgres
+1. Make sure you have Docker and Docker Compose installed on your device. If not, follow the installation instructions here: https://docs.docker.com/compose/install/
+2. Search for `!SETUP-COMPOSE` in all files (_ctr+shift+f in vs-code_) and adjust the values according to the instructions.
+3. Run the following command to start the application:
+   ```bash
+   docker compose up
+   ```
+4. Test the API by accessing:
+   ```
+   http://localhost:8080/api/v1/welcome
+   ```
+
+### Run Locally
+
+1. Ensure the following dependencies are installed:
+   - Go version 1.24.0 or higher
+   - PostgreSQL
    - Redis
-2. Clone this repository with
+2. Clone this repository:
 
    ```bash
    git clone https://github.com/snymnd/video-rental-shop-api.git
    ```
 
-   and change your working directory to the clone repository folder
+   Then change your working directory to the cloned repository folder.
 
-3. Install neccessary dependency with
-   ```go
+3. Install the necessary dependencies:
+   ```bash
    go mod tidy
    ```
-4. Set up environment with copy `.env.example` file to `.env` file and change the environment value as needed
-5. Create database on your postgres with name following your the value of`DATABASE_NAME` field on your `.env` file
-6. Run migration and seeder with bellow command
-   ```go
+4. Set up the environment by copying the `.env.example` file to a new `.env` file and configure the values as needed.
+5. Create a database in your PostgreSQL instance with a name that matches the `DATABASE_NAME` value in your `.env` file.
+6. Run database migrations and seeders:
+   ```bash
    go run cmd/db/main.go
    ```
-7. Finnaly! Run the application with bellow command
-   ```go
+7. Start the application:
+   ```bash
    go run cmd/web/main.go
    ```
-8. You can test the api by try to access/hit below endpoint <br>
-   `http://localhost:<port>/api/v1/welcome` <br> with `port` following defined value from `SERVER_ADDRESS` field on your `.env` file
+8. Test the API by accessing:
+   ```
+   http://localhost:<port>/api/v1/welcome
+   ```
+   where `<port>` is the value defined in the `SERVER_ADDRESS` field in your `.env` file.
