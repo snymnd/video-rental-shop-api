@@ -31,7 +31,7 @@ func NewViper() *viper.Viper {
 			path += "../"
 			continue
 		}
-		log.Fatalf("failed to parse config, error: " + err.Error())
+		log.Fatalf("failed to parse config, error: %s", err.Error())
 	}
 	return config
 }
